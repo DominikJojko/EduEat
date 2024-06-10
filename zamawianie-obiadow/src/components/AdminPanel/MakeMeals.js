@@ -1,0 +1,123 @@
+import React, { useState, useEffect } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+import './MakeMeals.css';
+
+function MakeMeals() {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [meals, setMeals] = useState([]);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchMeals();
+  }, []);
+
+  const fetchMeals = () => {
+    fetch('http://localhost:5000/api/meals')
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setMeals(data.map(meal => new Date(meal.date)));
+        } else {
+          setMeals([]);
+        }
+      })
+      .catch(error => console.error('Error fetching meals:', error));
+  };
+
+  const handleCreateMeals = () => {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const existingMeal = meals.some(meal => start <= meal && meal <= end);
+    if (existingMeal) {
+      setError('Obiady w podanym zakresie dat już istnieją.');
+      return;
+    }
+
+    fetch('http://localhost:5000/api/create-meals', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ startDate, endDate })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          fetchMeals();
+          setStartDate('');
+          setEndDate('');
+          setError('');
+        } else {
+          setError(data.message);
+        }
+      })
+      .catch(error => console.error('Error creating meals:', error));
+  };
+
+  const handleDeleteMeal = (date) => {
+    const formattedDate = date.toLocaleDateString('en-CA'); // Używamy en-CA, aby uzyskać format YYYY-MM-DD
+    console.log(`Deleting meal for date: ${formattedDate}`);
+
+    fetch('http://localhost:5000/api/delete-meal', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ date: formattedDate })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          fetchMeals();
+        } else {
+          console.error('Error deleting meal:', data.message);
+          setError(data.message);
+        }
+      })
+      .catch(error => console.error('Error deleting meal:', error));
+  };
+
+  return (
+    <div className="make-meals-container">
+      <h1>Zarządzaj obiadami</h1>
+      {error && <p className="error">{error}</p>}
+      <div className="create-meals">
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
+          placeholder="Data początkowa"
+        />
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          placeholder="Data końcowa"
+        />
+        <button onClick={handleCreateMeals}>Utwórz obiady</button>
+      </div>
+      <div className="meals-calendar">
+        <h2>Przyszłe obiady</h2>
+        <Calendar
+          onClickDay={(date) => {
+            if (meals.some(mealDate => mealDate.toDateString() === date.toDateString())) {
+              if (window.confirm(`Czy na pewno chcesz usunąć obiad na ${date.toDateString()}?`)) {
+                handleDeleteMeal(date);
+              }
+            }
+          }}
+          tileClassName={({ date, view }) => {
+            if (view === 'month' && meals.some(mealDate => mealDate.toDateString() === date.toDateString())) {
+              return 'meal-date';
+            }
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default MakeMeals;

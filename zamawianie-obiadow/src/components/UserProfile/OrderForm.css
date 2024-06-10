@@ -1,0 +1,35 @@
+.error {
+  color: red;
+}
+
+.meals-table {
+  width: auto;
+  margin: 0 auto;
+  border-collapse: collapse; 
+  max-width: 99%;
+  overflow-x: auto;
+}
+
+.meals-table th,
+.meals-table td {
+  border: 1px solid #ffffff;
+  padding: 8px;
+}
+
+.meals-table th {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.meals-table td {
+  text-align: center;
+}
+
+.meals-table-container {
+  overflow-x: auto;
+  padding: 10px;
+}
+
+.order-form-container {
+  margin-top: 1%;
+}

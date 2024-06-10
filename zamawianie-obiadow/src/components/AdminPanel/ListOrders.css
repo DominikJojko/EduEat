@@ -1,0 +1,40 @@
+.container {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+.input-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 10px;
+  justify-content: center;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.small-button {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+table {
+  margin-top: 20px;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table, th, td {
+  border: 1px solid white; /* Change border color to white */
+}
+
+th, td {
+  padding: 8px 12px;
+  text-align: center;
+}

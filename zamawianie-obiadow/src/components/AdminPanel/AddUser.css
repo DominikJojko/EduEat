@@ -1,0 +1,44 @@
+.add-user-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+  
+  .add-user-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+  }
+  
+  .add-user-form input,
+  .add-user-form select,
+  .add-user-form button {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .password-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .password-container button {
+    margin-left: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: #ffffff;
+    cursor: pointer;
+  }
+  
+  .password-container button:hover {
+    background-color: #0056b3;
+  }
+  

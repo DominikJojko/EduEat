@@ -1,0 +1,51 @@
+.navbar {
+  background-color: #000000;
+  padding: 0.5rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .nav-links a {
+  color: white;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-size: 100%;
+  padding: 10px 10px;
+}
+
+.navbar .nav-links a.active-link {
+  border-bottom: 2px solid #fff;
+}
+
+.navbar .brand-logo {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.logout-button {
+  display: inline-block;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: 'Kanit', sans-serif;
+  text-decoration: none;
+  font-size: 110%;
+}
+
+.logout-button:hover {
+  background-color: #0056b3; 
+}
+
+.nav-icon {
+  width: 25px;
+  height: 25px;
+  vertical-align: middle;
+  align-self: center;
+}
