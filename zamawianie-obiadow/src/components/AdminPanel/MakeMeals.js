@@ -18,7 +18,8 @@ function MakeMeals() {
       .then(response => response.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setMeals(data.map(meal => new Date(meal.date)));
+          const sortedMeals = data.map(meal => new Date(meal.date)).sort((a, b) => a - b);
+          setMeals(sortedMeals);
         } else {
           setMeals([]);
         }
@@ -116,6 +117,25 @@ function MakeMeals() {
           }}
         />
       </div>
+      <h2>Lista obiadów</h2>
+      <table className="meals-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Usuń</th>
+          </tr>
+        </thead>
+        <tbody>
+          {meals.map((meal, index) => (
+            <tr key={index}>
+              <td>{meal.toLocaleDateString('pl-PL')}</td>
+              <td>
+                <button onClick={() => handleDeleteMeal(meal)}>Usuń</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

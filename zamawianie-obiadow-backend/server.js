@@ -133,23 +133,68 @@ app.post('/api/create-meals', (req, res) => {
 });
 
 app.delete('/api/delete-meal', (req, res) => {
-  const { date } = req.body;
-  console.log(`Received delete request for date: ${date}`);
+  const { date, id } = req.body;
 
-  const query = 'DELETE FROM meal_descriptions WHERE date = ?';
-  db.query(query, [date], (err, result) => {
-    if (err) {
-      console.error('Błąd podczas usuwania obiadu:', err);
-      return res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu obiadu' });
-    }
-    if (result.affectedRows === 0) {
-      console.log('Obiad nie znaleziony');
-      return res.status(404).json({ success: false, message: 'Obiad nie znaleziony' });
-    }
-    console.log('Obiad usunięty pomyślnie');
-    res.status(200).json({ success: true, message: 'Obiad usunięty pomyślnie' });
-  });
+  if (date) {
+    console.log(`Received delete request for date: ${date}`);
+    const deleteOrdersQuery = 'DELETE FROM order_meals WHERE meal_id IN (SELECT id FROM meal_descriptions WHERE date = ?)';
+    const deleteMealQuery = 'DELETE FROM meal_descriptions WHERE date = ?';
+    
+    db.query(deleteOrdersQuery, [date], (err, result) => {
+      if (err) {
+        console.error('Błąd podczas usuwania powiązanych zamówień:', err);
+        return res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu powiązanych zamówień' });
+      }
+
+      db.query(deleteMealQuery, [date], (err, result) => {
+        if (err) {
+          console.error('Błąd podczas usuwania obiadu:', err);
+          return res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu obiadu' });
+        }
+
+        if (result.affectedRows === 0) {
+          console.log('Obiad nie znaleziony');
+          return res.status(404).json({ success: false, message: 'Obiad nie znaleziony' });
+        }
+
+        console.log('Obiad usunięty pomyślnie');
+        res.status(200).json({ success: true, message: 'Obiad usunięty pomyślnie' });
+      });
+    });
+
+  } else if (id) {
+    console.log(`Received delete request for id: ${id}`);
+    const deleteOrdersQuery = 'DELETE FROM order_meals WHERE meal_id = ?';
+    const deleteMealQuery = 'DELETE FROM meal_descriptions WHERE id = ?';
+
+    db.query(deleteOrdersQuery, [id], (err, result) => {
+      if (err) {
+        console.error('Błąd podczas usuwania powiązanych zamówień:', err);
+        return res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu powiązanych zamówień' });
+      }
+
+      db.query(deleteMealQuery, [id], (err, result) => {
+        if (err) {
+          console.error('Błąd podczas usuwania obiadu:', err);
+          return res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu obiadu' });
+        }
+
+        if (result.affectedRows === 0) {
+          console.log('Obiad nie znaleziony');
+          return res.status(404).json({ success: false, message: 'Obiad nie znaleziony' });
+        }
+
+        console.log('Obiad usunięty pomyślnie');
+        res.status(200).json({ success: true, message: 'Obiad usunięty pomyślnie' });
+      });
+    });
+
+  } else {
+    res.status(400).json({ success: false, message: 'Brak daty lub id w żądaniu' });
+  }
 });
+
+
 
 
 
