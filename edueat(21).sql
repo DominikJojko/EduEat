@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Cze 10, 2024 at 10:25 PM
+-- Generation Time: Cze 10, 2024 at 11:19 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -81,13 +81,12 @@ CREATE TABLE `order_meals` (
 --
 
 INSERT INTO `order_meals` (`id`, `user_id`, `meal_id`) VALUES
-(212, 1, 1098),
-(213, 24, 1098),
-(214, 1, 1101),
-(215, 1, 1101),
-(216, 1, 1101),
-(217, 1, 1103),
-(218, 24, 1101);
+(244, 2, 1101),
+(245, 2, 1102),
+(246, 2, 1098),
+(247, 2, 1099),
+(248, 2, 1103),
+(249, 2, 1104);
 
 -- --------------------------------------------------------
 
@@ -131,8 +130,7 @@ CREATE TABLE `user` (
 
 INSERT INTO `user` (`id`, `login`, `password`, `imie`, `nazwisko`, `role_id`, `class_id`) VALUES
 (1, 'admin', '$2b$10$0rr2rVxvUZFn./ErctDpY.9s9FFokpRAKCuEnXJIKud5.qjjp6h5C', 'Dominik', 'Jojko', 3, 1),
-(2, 'user', '$2b$10$V2FvWpnoBK2vbe0UcT8me.s2r9486DhkaD8OR68fg6FGZdvZSHAsO', 'Kamil', 'Dziura', 1, 2),
-(24, 'r4', '$2a$10$EmBVTobTA7KGIL91uiZ5CuFZeVMoTmjcbFxLXmN.bfYd3Yqkyh.ly', 'r4', 'r4', 1, 2);
+(2, 'user', '$2b$10$V2FvWpnoBK2vbe0UcT8me.s2r9486DhkaD8OR68fg6FGZdvZSHAsO', 'Kamil', 'Dziura', 1, 2);
 
 -- --------------------------------------------------------
 
@@ -197,7 +195,7 @@ ALTER TABLE `user_balance`
 -- AUTO_INCREMENT for table `class`
 --
 ALTER TABLE `class`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `meal_descriptions`
@@ -209,7 +207,7 @@ ALTER TABLE `meal_descriptions`
 -- AUTO_INCREMENT for table `order_meals`
 --
 ALTER TABLE `order_meals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=219;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=251;
 
 --
 -- AUTO_INCREMENT for table `role`
