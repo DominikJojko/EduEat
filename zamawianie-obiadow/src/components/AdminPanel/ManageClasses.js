@@ -13,7 +13,11 @@ function ManageClasses() {
   const fetchClasses = () => {
     fetch('http://localhost:5000/api/classes')
       .then(response => response.json())
-      .then(data => setClasses(data))
+      .then(data => {
+        // Sortowanie klas alfabetycznie po nazwie
+        const sortedClasses = data.sort((a, b) => a.name.localeCompare(b.name));
+        setClasses(sortedClasses);
+      })
       .catch(error => console.error('Error fetching classes:', error));
   };
 
