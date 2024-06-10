@@ -13,7 +13,7 @@ function AdminPanel() {
       <h1>Panel Administracyjny</h1>
       <ul>
         <li><a href="/admin-panel/list-orders">Generowanie listy zamówionych obiadów</a></li>
-        <li><a href="/admin-panel/add-user">Dodaj użytkownika</a></li>
+        <li><a href="/admin-panel/add-user">Dodaj i usuń użytkownika</a></li>
         <li><a href="/admin-panel/manage-classes">Edycja klas</a></li>
         <li><a href="/admin-panel/make-meals">Zarządzaj obiadami</a></li>
       </ul>
