@@ -319,11 +319,6 @@ app.post('/api/add-order', (req, res) => {
 });
 
 
-
-
-
-
-
 app.get('/meal-descriptions', (req, res) => {
   const query = 'SELECT * FROM meal_descriptions';
   db.query(query, (err, results) => {
