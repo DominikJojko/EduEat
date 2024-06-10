@@ -70,26 +70,28 @@ function OrderForm() {
 
   const handleOrderSubmit = async (meal) => {
     const orderDateLocal = new Date(meal.date).toISOString().split('T')[0];
-
+    
     // Sprawdzanie, czy zamówienie już istnieje
-    if (userOrders.some(order => order.date === orderDateLocal && order.meal_id === meal.id)) {
+    if (userOrders.some(order => order.date === orderDateLocal)) {
       alert(`Zamówienie na dzień ${formatDate(orderDateLocal)} już istnieje.`);
       return;
     }
-
-    console.log("Próba wysyłania zamówienia dla dania o ID:", meal.id, "dla użytkownika o ID:", user.id);
+  
+    console.log("Próba wysyłania zamówienia dla dania o ID:", meal.id, "dla użytkownika o ID:", user.id, "na dzień:", orderDateLocal);
     try {
       const response = await fetch('http://localhost:5000/api/add-order', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ userId: user.id, mealId: meal.id, orderDate: orderDateLocal })
       });
+      console.log('Response status:', response.status);
       if (response.ok) {
         alert(`Zamówiłeś obiad na dzień ${new Date(meal.date).toLocaleDateString()}`);
         fetchUserOrders(); // Pobranie zamówień użytkownika po dodaniu nowego zamówienia
       } else if (response.status === 409) {
         const data = await response.json();
-        alert(data.message);
+        console.log('Conflict error message:', data.error);
+        alert(data.error);
       } else {
         throw new Error('Błąd podczas wysyłania zamówienia');
       }
@@ -98,6 +100,9 @@ function OrderForm() {
       console.error("Błąd podczas wysyłania zamówienia:", error);
     }
   };
+  
+  
+  
 
   const handleMonthOrderSubmit = async () => {
     if (!selectedMonth) {
@@ -121,7 +126,7 @@ function OrderForm() {
       for (let date of daysArray) {
         // Sprawdzanie, czy zamówienie już istnieje
         const meal = mealDescriptions.find(meal => new Date(meal.date).toISOString().split('T')[0] === date);
-        if (!meal || userOrders.some(order => order.date === date && order.meal_id === meal.id)) {
+        if (!meal || userOrders.some(order => order.date === date)) {
           console.log(`Zamówienie na dzień ${formatDate(date)} już istnieje lub brak obiadu.`);
           continue;
         }
@@ -161,7 +166,7 @@ function OrderForm() {
       for (let date of daysArray) {
         // Sprawdzanie, czy zamówienie już istnieje
         const meal = mealDescriptions.find(meal => new Date(meal.date).toISOString().split('T')[0] === date);
-        if (!meal || userOrders.some(order => order.date === date && order.meal_id === meal.id)) {
+        if (!meal || userOrders.some(order => order.date === date)) {
           console.log(`Zamówienie na dzień ${formatDate(date)} już istnieje lub brak obiadu.`);
           continue;
         }

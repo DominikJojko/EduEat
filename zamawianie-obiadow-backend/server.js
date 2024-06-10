@@ -282,35 +282,44 @@ app.post('/api/add-order', (req, res) => {
     return res.status(400).json({ error: 'Brakujące dane' });
   }
 
+  // Sprawdzanie, czy zamówienie już istnieje na podstawie user_id i meal_id
   const checkOrderQuery = `
-    SELECT * 
-    FROM order_meals om 
-    JOIN meal_descriptions md ON om.meal_id = md.id 
-    WHERE om.user_id = ? AND om.meal_id = ? AND md.date = ?
+    SELECT id 
+    FROM order_meals 
+    WHERE user_id = ? 
+    AND meal_id = ?
   `;
-  const values = [userId, mealId, orderDate];
+  const values = [userId, mealId];
 
+  console.log('Executing checkOrderQuery with values:', values);
   db.query(checkOrderQuery, values, (err, results) => {
     if (err) {
       console.error('Błąd podczas sprawdzania istniejącego zamówienia:', err);
       return res.status(500).json({ error: 'Błąd serwera' });
     }
 
+    console.log('checkOrderQuery results:', results);
     if (results.length > 0) {
-      return res.status(409).json({ error: 'Zamówienie na ten dzień już istnieje' });
+      console.log('Order already exists for userId:', userId, 'and mealId:', mealId);
+      return res.status(409).json({ error: 'Zamówienie na ten obiad już istnieje' });
     }
 
     const insertOrderQuery = 'INSERT INTO order_meals (user_id, meal_id) VALUES (?, ?)';
+    console.log('Executing insertOrderQuery with values:', [userId, mealId]);
     db.query(insertOrderQuery, [userId, mealId], (err, result) => {
       if (err) {
         console.error('Błąd podczas dodawania zamówienia:', err);
         return res.status(500).json({ error: 'Błąd serwera' });
       }
 
+      console.log('Order added successfully for userId:', userId, 'and mealId:', mealId);
       res.json({ message: 'Zamówienie dodane pomyślnie' });
     });
   });
 });
+
+
+
 
 
 
