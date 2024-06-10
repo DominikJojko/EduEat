@@ -76,6 +76,24 @@ app.post('/api/check-user', (req, res) => {
   });
 });
 
+// Endpoint do usuwania użytkownika
+app.delete('/api/delete-user/:id', (req, res) => {
+  const userId = req.params.id;
+
+  const query = 'DELETE FROM user WHERE id = ?';
+  db.query(query, [userId], (err, result) => {
+    if (err) {
+      console.error('Błąd podczas usuwania użytkownika:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy usuwaniu użytkownika' });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Użytkownik nie znaleziony' });
+    }
+    res.status(200).json({ message: 'Użytkownik usunięty pomyślnie' });
+  });
+});
+
+
 app.post('/api/create-meals', (req, res) => {
   const { startDate, endDate } = req.body;
   const dates = [];

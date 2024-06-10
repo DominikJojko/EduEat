@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
 import './AddUser.css';
 
 function AddUser() {
+  const { user: currentUser } = useContext(AuthContext);
   const [userData, setUserData] = useState({
     login: '',
     password: '',
@@ -13,8 +15,11 @@ function AddUser() {
 
   const [classes, setClasses] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [selectedUser, setSelectedUser] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:5000/api/classes')
@@ -26,6 +31,11 @@ function AddUser() {
       .then(response => response.json())
       .then(data => setRoles(data))
       .catch(error => console.error('Error fetching roles:', error));
+
+    fetch('http://localhost:5000/api/users')
+      .then(response => response.json())
+      .then(data => setUsers(data))
+      .catch(error => console.error('Error fetching users:', error));
   }, []);
 
   const handleChange = (e) => {
@@ -62,6 +72,11 @@ function AddUser() {
         .then(data => {
           alert(data.message);
           console.log(data);
+          // Odśwież listę użytkowników po dodaniu nowego użytkownika
+          fetch('http://localhost:5000/api/users')
+            .then(response => response.json())
+            .then(data => setUsers(data))
+            .catch(error => console.error('Error fetching users:', error));
         })
         .catch(error => {
           console.error('Error adding user:', error);
@@ -75,6 +90,26 @@ function AddUser() {
 
   const toggleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleDeleteUser = () => {
+    fetch(`http://localhost:5000/api/delete-user/${selectedUser}`, {
+      method: 'DELETE',
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Nie udało się usunąć użytkownika');
+      }
+      return response.json();
+    })
+    .then(data => {
+      alert(data.message);
+      setUsers(users.filter(user => user.id !== selectedUser));
+      setSelectedUser('');
+    })
+    .catch(error => {
+      console.error('Error deleting user:', error);
+    });
   };
 
   return (
@@ -129,6 +164,15 @@ function AddUser() {
         </select>
         <button type="submit">Dodaj użytkownika</button>
       </form>
+
+      <h2>Usuń użytkownika</h2>
+      <select value={selectedUser} onChange={(e) => setSelectedUser(e.target.value)}>
+        <option value="">Wybierz użytkownika</option>
+        {users.map(user => (
+          user.id !== currentUser.id && <option key={user.id} value={user.id}>{`${user.nazwisko} ${user.imie}`}</option>
+        ))}
+      </select>
+      <button onClick={handleDeleteUser}>Usuń użytkownika</button>
     </div>
   );
 }
