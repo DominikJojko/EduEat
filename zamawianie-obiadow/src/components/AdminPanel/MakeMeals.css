@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center; /* Wyśrodkowanie zawartości w pionie */
   padding: 20px;
+  font-size: 18px; /* Increased base font size */
 }
 
 .create-meals {
@@ -11,6 +12,8 @@
 
 .create-meals input {
   margin-right: 10px;
+  padding: 12px; /* Increased padding */
+  font-size: 1.1em; /* Increased font size */
 }
 
 .meals-calendar {
@@ -118,8 +121,9 @@
 
 .meals-table th, .meals-table td {
   border: 1px solid #5e5e5e;
-  padding: 8px;
+  padding: 10px; /* Increased padding */
   text-align: center; /* Wyśrodkowanie tekstu w tabeli */
+  font-size: 1.1em; /* Increased font size */
 }
 
 .meals-table th {

@@ -20,8 +20,8 @@
 }
 
 .small-button {
-  padding: 5px 10px;
-  font-size: 14px;
+  padding: 7px 14px; /* Increased padding */
+  font-size: 16px; /* Increased font size */
 }
 
 table {
@@ -35,6 +35,7 @@ table, th, td {
 }
 
 th, td {
-  padding: 8px 12px;
+  padding: 10px 14px; /* Increased padding */
   text-align: center;
+  font-size: 1.1em; /* Increased font size */
 }

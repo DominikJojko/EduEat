@@ -1,52 +1,56 @@
 .manage-classes-container {
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .add-class {
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
-  .add-class input {
-    margin-right: 10px;
-  }
-  
-  .class-list {
-    display: inline-block;
-    text-align: left;
-  }
-  
-  .class-list ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .class-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-  }
-  
-  .class-list li span {
-    margin-right: 20px;
-  }
-  
-  .class-list li button {
-    background-color: red;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-  }
-  
-  .class-list li button:hover {
-    background-color: darkred;
-  }
-  
-  .message {
-    color: green;
-    font-weight: bold;
-  }
-  
+  padding: 20px;
+  text-align: center;
+  font-size: 18px; /* Increased base font size */
+}
+
+.add-class {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.add-class input {
+  margin-right: 10px;
+  padding: 12px; /* Increased padding */
+  font-size: 1.1em; /* Increased font size */
+}
+
+.class-list {
+  display: inline-block;
+  text-align: left;
+}
+
+.class-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.class-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0; /* Increased padding */
+  font-size: 1.1em; /* Increased font size */
+}
+
+.class-list li span {
+  margin-right: 20px;
+}
+
+.class-list li button {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 7px 14px; /* Increased padding */
+  cursor: pointer;
+  font-size: 1.1em; /* Increased font size */
+}
+
+.class-list li button:hover {
+  background-color: darkred;
+}
+
+.message {
+  color: green;
+  font-weight: bold;
+}

@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100%;
+  font-size: 18px; /* Increased base font size */
 }
 
 .login-container {
@@ -16,27 +17,30 @@
 .login-container h1 {
   color: #333;
   margin-bottom: 2rem;
+  font-size: 1.5em; /* Increased font size */
 }
 
 .login-container input {
   width: calc(100% - 20px);
-  padding: 10px;
+  padding: 12px; /* Increased padding */
   margin: 10px 0;
   border: 1px solid #ced4da;
   background-color: #e9ecefcb;
   color: #000000;
   border-radius: 4px;
+  font-size: 1.1em; /* Increased font size */
 }
 
 .login-container button {
   width: calc(100% - 20px);
-  padding: 10px;
+  padding: 12px; /* Increased padding */
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   margin-top: 20px;
+  font-size: 1.1em; /* Increased font size */
 }
 
 .login-container button:hover {

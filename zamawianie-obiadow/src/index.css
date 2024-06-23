@@ -8,17 +8,20 @@ body {
   font-family: 'Kanit', sans-serif;
   background-color: #121212;
   color: #ffffff;
-  line-height: 1.6;
+  line-height: 1.8; /* Increased line-height */
   padding-top: 80px;
+  font-size: 18px; /* Increased base font size */
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #ffffff;
   margin-bottom: 20px;
+  font-size: 1.5em; /* Increased font size */
 }
 
 p {
   margin-bottom: 20px;
+  font-size: 1.2em; /* Increased font size */
 }
 
 a {
@@ -36,10 +39,11 @@ button {
   background-color: #007bff;
   color: #ffffff;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px; /* Increased padding */
   margin: 5px;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1.1em; /* Increased font size */
 }
 
 button:hover {
@@ -70,8 +74,9 @@ textarea {
   color: #fff;
   border: 1px solid #333;
   border-radius: 5px;
-  padding: 10px;
+  padding: 12px; /* Increased padding */
   margin-bottom: 15px;
+  font-size: 1.1em; /* Increased font size */
 }
 
 input[type='submit'] {
@@ -80,14 +85,14 @@ input[type='submit'] {
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  padding: 10px 15px;
+  padding: 12px 18px; /* Increased padding */
   margin-bottom: 15px;
+  font-size: 1.1em; /* Increased font size */
 }
 
 input[type='submit']:hover {
   background-color: #0056b3;
 }
-
 
 .navbar {
   background-color: #222;
@@ -101,7 +106,8 @@ input[type='submit']:hover {
 
 .navbar a {
   color: white;
-  padding: 0 10px;
+  padding: 0 15px; /* Increased padding */
+  font-size: 1.1em; /* Increased font size */
 }
 
 .navbar a:hover {
@@ -119,5 +125,5 @@ footer {
   bottom: 0; 
   width: 100%; 
   font-weight: normal;
-  font-size: 10px;
+  font-size: 12px; /* Increased font size */
 }

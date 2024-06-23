@@ -2,50 +2,54 @@
     text-align: center;
     width: 80%;
     margin: 0 auto;
-}
-
-.orders-table {
+    font-size: 18px; /* Increased base font size */
+  }
+  
+  .orders-table {
     width: auto;
     margin: 0 auto;
     border-collapse: collapse; 
     margin-top: 3%;
     max-width: 99%;
     overflow-x: auto;
-}
-
-.orders-table th, .orders-table td {
+  }
+  
+  .orders-table th, .orders-table td {
     border: 1px solid #ffffff;
-    padding: 8px;
+    padding: 10px 14px; /* Increased padding */
     text-align: center;
-}
-
-.orders-table th {
+    font-size: 1.1em; /* Increased font size */
+  }
+  
+  .orders-table th {
     background-color: #000000;
     color: #ffffff;
-}
-
-.cancel-button {
+  }
+  
+  .cancel-button {
     background-color: red;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 7px 14px; /* Increased padding */
     cursor: pointer;
     text-align: center;
-}
-
-.pagination-controls button {
+    font-size: 1.1em; /* Increased font size */
+  }
+  
+  .pagination-controls button {
     margin: 5px;
-    padding: 5px 10px;
-    
-}
-
-.pagination-controls button[disabled] {
+    padding: 7px 14px; /* Increased padding */
+    font-size: 1.1em; /* Increased font size */
+  }
+  
+  .pagination-controls button[disabled] {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.pagination-controls {
+  }
+  
+  .pagination-controls {
     overflow-x: auto;
     padding: 10px;
     margin-top: 1%;
-}
+  }
+  
