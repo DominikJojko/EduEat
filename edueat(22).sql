@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Cze 23, 2024 at 08:24 PM
+-- Generation Time: Cze 23, 2024 at 10:42 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -57,7 +57,6 @@ CREATE TABLE `meal_descriptions` (
 --
 
 INSERT INTO `meal_descriptions` (`id`, `date`) VALUES
-(1170, '2024-06-17'),
 (1171, '2024-06-18'),
 (1172, '2024-06-19'),
 (1173, '2024-06-20'),
@@ -280,7 +279,9 @@ INSERT INTO `meal_descriptions` (`id`, `date`) VALUES
 (1391, '2025-06-24'),
 (1392, '2025-06-25'),
 (1393, '2025-06-26'),
-(1394, '2025-06-27');
+(1394, '2025-06-27'),
+(1396, '2024-06-11'),
+(1399, '2024-06-14');
 
 -- --------------------------------------------------------
 
@@ -299,8 +300,6 @@ CREATE TABLE `order_meals` (
 --
 
 INSERT INTO `order_meals` (`id`, `user_id`, `meal_id`) VALUES
-(256, 2, 1170),
-(259, 25, 1170),
 (261, 1, 1175),
 (262, 1, 1176),
 (263, 1, 1177),
@@ -422,7 +421,7 @@ ALTER TABLE `class`
 -- AUTO_INCREMENT for table `meal_descriptions`
 --
 ALTER TABLE `meal_descriptions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1395;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1400;
 
 --
 -- AUTO_INCREMENT for table `order_meals`
