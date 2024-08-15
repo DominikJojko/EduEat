@@ -219,7 +219,7 @@ function OrderForm() {
       </table>
 
       <br />
-      <p><center><b>Pozostałe alergeny z listy 13 podstawowych alergenów, czyli: skorupiaki, mięczaki, łubin, dwutlenek siarki nie są zawarte w naszych daniach.</b></center></p>
+      <p><center><b>miejsce na tekst</b></center></p>
 
       {error && <p className="error-message">{error}</p>}
 
