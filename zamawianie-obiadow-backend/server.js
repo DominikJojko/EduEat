@@ -195,10 +195,6 @@ app.delete('/api/delete-meal', (req, res) => {
 });
 
 
-
-
-
-
 // Klasy
 app.get('/api/classes', (req, res) => {
   const query = 'SELECT id, name FROM class';
@@ -608,7 +604,6 @@ app.post('/api/generate-report', (req, res) => {
     });
   });
 });
-
 
 app.get('/api/user-orders/:userId', (req, res) => {
   const userId = req.params.userId;
