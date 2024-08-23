@@ -77,7 +77,11 @@ function ListOrders() {
 
     fetch('http://localhost:5000/api/users')
       .then(response => response.json())
-      .then(data => setUsers(data))
+      .then(data => {
+        // Sortowanie użytkowników alfabetycznie według nazwiska
+        const sortedUsers = data.sort((a, b) => a.nazwisko.localeCompare(b.nazwisko));
+        setUsers(sortedUsers);
+      })
       .catch(error => console.error('Error fetching users:', error));
   }, []);
 
