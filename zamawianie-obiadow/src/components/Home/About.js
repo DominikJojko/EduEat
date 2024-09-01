@@ -7,7 +7,7 @@ function About() {
       <h1>O Aplikacji "EduEat"</h1>
       <p>Nasza aplikacja "EduEat" to nowoczesne rozwiązanie dla szkół, które umożliwia uczniom, rodzicom oraz pracownikom oświaty łatwe i szybkie zamawianie posiłków na każdy dzień szkolny. Została stworzona z myślą o zapewnieniu wygody i organizacji procesu zamawiania obiadów, jednocześnie promując zdrowe nawyki żywieniowe.</p>
       
-      <h2>Funkcjonalności:</h2>
+      {/* <h2>Funkcjonalności:</h2>
       <ul>
         <li>Zamawianie Online: Użytkownicy mogą zamawiać obiady na konkretny dzień, tydzień, miesiąc lub nawet cały rok szkolny.</li>
         <li>Automatyczne Promocje: System automatycznie promuje uczniów do następnej klasy na początku każdego roku szkolnego, co umożliwia zachowanie ciągłości zamówień.</li>
@@ -28,11 +28,14 @@ function About() {
       <p>Nasza aplikacja została zaprojektowana, aby wspierać i angażować się w życie szkolne, ułatwiając organizację i planowanie w kuchni szkolnej, co przekłada się na mniej marnowania żywności i lepsze zarządzanie zasobami.</p>
       
       <h2>Rozwijaj z Nami Aplikację:</h2>
-      <p>Jesteśmy otwarci na sugestie i gotowi na ciągłe ulepszanie naszej aplikacji, aby lepiej służyć naszej społeczności. Jeśli masz pomysły lub opinie, skontaktuj się z nami!</p>
+      <p>Jesteśmy otwarci na sugestie i gotowi na ciągłe ulepszanie naszej aplikacji, aby lepiej służyć naszej społeczności. Jeśli masz pomysły lub opinie, skontaktuj się z nami!</p> */}
 
-      <h1>Kontakt</h1>
-      <p>JD</p>
-      <p>Email: <a href="mailto:edueat.jd@gmail.com">edueat.jd@gmail.com</a></p>
+      <div class="contact-container">
+        <h1>Kontakt</h1>
+        <p>Jojko Dominik</p>
+        <p>Email: <a href="mailto:edueat.jd@gmail.com">edueat.jd@gmail.com</a></p>
+      </div>
+
     </div>
   );
 }
