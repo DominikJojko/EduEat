@@ -94,21 +94,28 @@ app.delete('/api/delete-user/:id', (req, res) => {
 });
 
 
-app.post('/api/register', async (req, res) => {
-  const { login, password, imie, nazwisko, class_id } = req.body;
+app.post('/api/register-user', (req, res) => {
+  console.log('Received register-user request:', req.body);
+  const { login, password, imie, nazwisko, klasa } = req.body;
+  const saltRounds = 10;
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10); // Hashowanie hasła
-    const [result] = await db.query(
-      'INSERT INTO user (login, password, imie, nazwisko, role_id, class_id, status_id) VALUES (?, ?, ?, ?, 1, ?, 1)',
-      [login, hashedPassword, imie, nazwisko, class_id]
-    );
+  bcrypt.hash(password, saltRounds, (err, hashedPassword) => {
+    if (err) {
+      console.error('Błąd hashowania hasła:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy hashowaniu hasła' });
+    }
 
-    res.json({ message: 'Rejestracja zakończona sukcesem' });
-  } catch (error) {
-    res.status(500).json({ message: 'Błąd rejestracji' });
-  }
+    const query = `INSERT INTO user (login, password, imie, nazwisko, role_id, class_id, status_id) VALUES (?, ?, ?, ?, 1, ?, 1)`;
+    db.query(query, [login, hashedPassword, imie, nazwisko, klasa], (err, result) => {
+      if (err) {
+        console.error('Błąd dodawania użytkownika:', err);
+        return res.status(500).json({ error: 'Błąd serwera przy dodawaniu użytkownika' });
+      }
+      res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta.' });
+    });
+  });
 });
+
 
 
 
