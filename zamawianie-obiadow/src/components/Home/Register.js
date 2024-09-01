@@ -25,8 +25,34 @@ function Register() {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    
+    if (password.length < minLength) {
+      return 'Hasło musi mieć co najmniej 8 znaków';
+    }
+    if (!hasUpperCase) {
+      return 'Hasło musi zawierać co najmniej jedną dużą literę';
+    }
+    if (!hasNumber) {
+      return 'Hasło musi zawierać co najmniej jedną cyfrę';
+    }
+    
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const passwordError = validatePassword(userData.password);
+    if (passwordError) {
+      setError(passwordError);
+      setSuccess('');
+      return;
+    }
+
     fetch('http://localhost:5000/api/check-user', {
       method: 'POST',
       headers: {
