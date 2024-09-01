@@ -94,6 +94,24 @@ app.delete('/api/delete-user/:id', (req, res) => {
 });
 
 
+app.post('/api/register', async (req, res) => {
+  const { login, password, imie, nazwisko, class_id } = req.body;
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10); // Hashowanie hasła
+    const [result] = await db.query(
+      'INSERT INTO user (login, password, imie, nazwisko, role_id, class_id, status_id) VALUES (?, ?, ?, ?, 1, ?, 1)',
+      [login, hashedPassword, imie, nazwisko, class_id]
+    );
+
+    res.json({ message: 'Rejestracja zakończona sukcesem' });
+  } catch (error) {
+    res.status(500).json({ message: 'Błąd rejestracji' });
+  }
+});
+
+
+
 app.post('/api/create-meals', (req, res) => {
   const { startDate, endDate } = req.body;
   const dates = [];
