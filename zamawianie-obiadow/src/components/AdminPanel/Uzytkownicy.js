@@ -1,9 +1,8 @@
 import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './AdminPanel.css';
 
-function AdminPanel() {
+function Uzytkownicy() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -13,13 +12,13 @@ function AdminPanel() {
 
   return (
     <div className="admin-panel-container">
-      <h1 style={{ fontSize: '45px' }}>PANEL ADMINISTRACYJNY</h1>
+      <h1 style={{ fontSize: '45px' }}>UŻYTKOWNICY</h1>
       <div className="admin-panel-buttons">
-        <button onClick={() => navigate('/admin-panel/uzytkownicy')}>UŻYTKOWNICY</button>
-        <button onClick={() => navigate('/admin-panel/obiady')}>OBIADY</button>
+        <button onClick={() => navigate('/admin-panel/add-user')}>Dodaj i usuń użytkownika</button>
+        <button onClick={() => navigate('/admin-panel/manage-classes')}>Edycja klas</button>
       </div>
     </div>
   );
 }
 
-export default AdminPanel;
+export default Uzytkownicy;
