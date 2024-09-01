@@ -15,8 +15,8 @@ function AdminPanel() {
     <div className="admin-panel-container">
       <h1 style={{ fontSize: '45px' }}>PANEL ADMINISTRACYJNY</h1>
       <div className="admin-panel-buttons">
-        <button onClick={() => navigate('/admin-panel/uzytkownicy')}>UŻYTKOWNICY</button>
-        <button onClick={() => navigate('/admin-panel/obiady')}>OBIADY</button>
+              <button onClick={() => navigate('/admin-panel/obiady')}>OBIADY</button>
+              <button onClick={() => navigate('/admin-panel/uzytkownicy')}>UŻYTKOWNICY</button>
       </div>
     </div>
   );
