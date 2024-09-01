@@ -1,0 +1,37 @@
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #ffffff;
+    background-color: #121212;
+    padding: 20px;
+  }
+  
+  .register-form {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+  }
+  
+  .register-form input,
+  .register-form select,
+  .register-form button {
+    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+  }
+  
+  .success-message {
+    color: green;
+    margin-bottom: 10px;
+  }
+  

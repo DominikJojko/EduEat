@@ -11,6 +11,7 @@ import PrivateRoute from './context/PrivateRoute';
 import Home from './components/Home/Home';
 import About from './components/Home/About';
 import Login from './components/Home/Login';
+import Register from './components/Home/Register';
 // UserProfile
 import OrderForm from './components/UserProfile/OrderForm';
 import UserProfile from './components/UserProfile/UserProfile'; 
@@ -31,6 +32,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           
           {/* Funkcjonalności użytkownika */}
           <Route path="/order" element={<PrivateRoute><OrderForm /></PrivateRoute>} />
