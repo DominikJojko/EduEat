@@ -13,14 +13,14 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
-    
+
       if (!response.ok) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
@@ -30,17 +30,20 @@ function Login() {
           throw new Error('Błąd serwera, odpowiedź nie jest w formacie JSON');
         }
       }
-    
+
       const data = await response.json();
-console.log('Response data:', data);
-login(data.token, { username: data.username, role_id: data.role_id, id: data.id }, () => navigate('/order'));
+      console.log('Response data:', data);
+      login(data.token, { username: data.username, role_id: data.role_id, id: data.id }, () => navigate('/order'));
 
     } catch (error) {
       setError(error.message || 'Nie udało się zalogować');
       console.error(error);
     }
   };
-  
+
+  const handleRegister = () => {
+    navigate('/register');
+  };
 
   return (
     <div className="login-page">
@@ -61,6 +64,7 @@ login(data.token, { username: data.username, role_id: data.role_id, id: data.id 
           />
           <button type="submit">Zaloguj się</button>
         </form>
+        <button type="button" className="register-button" onClick={handleRegister}>Zarejestruj się</button>
       </div>
     </div>
   );
