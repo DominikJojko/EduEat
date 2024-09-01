@@ -88,8 +88,12 @@ function AddUser() {
     });
   };
 
-  const toggleShowPassword = () => {
-    setShowPassword(!showPassword);
+  const handleMouseDown = () => {
+    setShowPassword(true);
+  };
+
+  const handleMouseUp = () => {
+    setShowPassword(false);
   };
 
   const handleDeleteUser = () => {
@@ -132,8 +136,12 @@ function AddUser() {
             onChange={handleChange}
             placeholder="Hasło"
           />
-          <button type="button" onClick={toggleShowPassword}>
-            {showPassword ? 'Ukryj' : 'Pokaż'} hasło
+          <button
+            type="button"
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+          >
+            👁️
           </button>
         </div>
         <input
