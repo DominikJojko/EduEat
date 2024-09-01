@@ -6,9 +6,6 @@
   font-size: 18px; /* Increased base font size */
 }
 
-.create-meals {
-  margin-bottom: 20px;
-}
 
 .create-meals input {
   margin-right: 10px;
@@ -16,6 +13,17 @@
   font-size: 1.1em; /* Increased font size */
 }
 
+.react-calendar__navigation__label {
+  color: #fff; /* White text for label */
+  font-size: 0.9em; /* Slightly increase the font size */
+  text-align: center; /* Center the text */
+  white-space: nowrap; /* Prevent text from wrapping to the next line */
+  overflow: hidden; /* Ensure overflow does not affect layout */
+  text-overflow: ellipsis; /* Add ellipsis if text overflows */
+  padding: 0 10px; /* Add padding to create space around the label */
+  max-width: 100%; /* Ensure label does not exceed the container's width */
+  box-sizing: border-box; /* Include padding in element's width */
+}
 .meals-calendar {
   display: flex;
   flex-direction: column;
@@ -133,4 +141,25 @@
 
 .error {
   color: red;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.pagination button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.pagination span {
+  font-size: 18px;
+  font-weight: bold;
 }

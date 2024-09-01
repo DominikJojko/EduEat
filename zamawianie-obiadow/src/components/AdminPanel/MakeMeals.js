@@ -149,6 +149,7 @@ function MakeMeals() {
           }}
         />
       </div>
+      <p></p>
       <h2>Lista obiadów</h2>
       <div className="pagination">
         <button onClick={handlePreviousMonth}>Poprzedni miesiąc</button>
