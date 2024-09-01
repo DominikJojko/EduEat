@@ -7,11 +7,18 @@ function MakeMeals() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [meals, setMeals] = useState([]);
+  const [displayedMeals, setDisplayedMeals] = useState([]);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [error, setError] = useState('');
 
   useEffect(() => {
     fetchMeals();
   }, []);
+
+  useEffect(() => {
+    filterMealsByMonth();
+  }, [meals, currentMonth, currentYear]);
 
   const fetchMeals = () => {
     fetch('http://localhost:5000/api/meals')
@@ -25,6 +32,13 @@ function MakeMeals() {
         }
       })
       .catch(error => console.error('Error fetching meals:', error));
+  };
+
+  const filterMealsByMonth = () => {
+    const filtered = meals.filter(meal => 
+      meal.getMonth() === currentMonth && meal.getFullYear() === currentYear
+    );
+    setDisplayedMeals(filtered);
   };
 
   const handleCreateMeals = () => {
@@ -59,7 +73,7 @@ function MakeMeals() {
   };
 
   const handleDeleteMeal = (date) => {
-    const formattedDate = date.toLocaleDateString('en-CA'); // Używamy en-CA, aby uzyskać format YYYY-MM-DD
+    const formattedDate = date.toLocaleDateString('en-CA');
     console.log(`Deleting meal for date: ${formattedDate}`);
 
     fetch('http://localhost:5000/api/delete-meal', {
@@ -79,6 +93,24 @@ function MakeMeals() {
         }
       })
       .catch(error => console.error('Error deleting meal:', error));
+  };
+
+  const handlePreviousMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
   };
 
   return (
@@ -118,6 +150,11 @@ function MakeMeals() {
         />
       </div>
       <h2>Lista obiadów</h2>
+      <div className="pagination">
+        <button onClick={handlePreviousMonth}>Poprzedni miesiąc</button>
+        <span>{new Date(currentYear, currentMonth).toLocaleString('pl-PL', { month: 'long', year: 'numeric' })}</span>
+        <button onClick={handleNextMonth}>Następny miesiąc</button>
+      </div>
       <table className="meals-table">
         <thead>
           <tr>
@@ -126,7 +163,7 @@ function MakeMeals() {
           </tr>
         </thead>
         <tbody>
-          {meals.map((meal, index) => (
+          {displayedMeals.map((meal, index) => (
             <tr key={index}>
               <td>{meal.toLocaleDateString('pl-PL')}</td>
               <td>
