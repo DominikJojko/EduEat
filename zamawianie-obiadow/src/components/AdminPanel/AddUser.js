@@ -42,8 +42,34 @@ function AddUser() {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
+  const validatePassword = (password) => {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+
+    if (password.length < minLength) {
+      return 'Hasło musi mieć co najmniej 8 znaków';
+    }
+    if (!hasUpperCase) {
+      return 'Hasło musi zawierać co najmniej jedną dużą literę';
+    }
+    if (!hasNumber) {
+      return 'Hasło musi zawierać co najmniej jedną cyfrę';
+    }
+
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const passwordError = validatePassword(userData.password);
+    if (passwordError) {
+      setError(passwordError);
+      setSuccess('');
+      return;
+    }
+
     fetch('http://localhost:5000/api/check-user', {
       method: 'POST',
       headers: {
@@ -72,6 +98,17 @@ function AddUser() {
         .then(data => {
           alert(data.message);
           console.log(data);
+          // Resetowanie formularza po dodaniu nowego użytkownika
+          setUserData({
+            login: '',
+            password: '',
+            imie: '',
+            nazwisko: '',
+            klasa: '',
+            role_id: ''
+          });
+          setError('');
+          setSuccess('Użytkownik dodany pomyślnie');
           // Odśwież listę użytkowników po dodaniu nowego użytkownika
           fetch('http://localhost:5000/api/users')
             .then(response => response.json())
@@ -120,6 +157,7 @@ function AddUser() {
     <div className="add-user-container">
       <h1>Dodaj użytkownika</h1>
       {error && <p className="error">{error}</p>}
+      {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit} className="add-user-form">
         <input
           type="text"
