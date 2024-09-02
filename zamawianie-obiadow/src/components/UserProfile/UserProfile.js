@@ -53,9 +53,14 @@ function UserProfile() {
   };
 
   const isPast = (dateString) => {
-    const today = new Date();
+    const now = new Date();
     const orderDate = new Date(dateString);
-    return orderDate < today;
+
+    // Ustawienie godziny 8:30 rano na dzień zamówienia
+    orderDate.setHours(8, 30, 0, 0);
+
+    // Sprawdzenie, czy bieżący czas jest po 8:30 rano dnia zamówienia
+    return now > orderDate;
   };
 
   if (!user) {

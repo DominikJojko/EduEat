@@ -21,6 +21,7 @@ function OrderForm() {
   useEffect(() => {
     const fetchMealDescriptions = async () => {
       const today = new Date();
+      const now = new Date();
       const maxDate = new Date();
       maxDate.setDate(today.getDate() + 14); // obiady na 14 dni do przodu
 
@@ -32,7 +33,12 @@ function OrderForm() {
         const meals = await response.json();
         const filteredMeals = meals.filter(meal => {
           const mealDate = new Date(meal.date);
-          return mealDate >= today && mealDate <= maxDate;
+
+          // Ustawienie godziny 8:30 rano na dzień posiłku
+          mealDate.setHours(8, 30, 0, 0);
+
+          // Sprawdzenie, czy data posiłku jest dzisiejsza i obecny czas jest przed 8:30
+          return mealDate >= now && mealDate <= maxDate;
         }).sort((a, b) => new Date(a.date) - new Date(b.date)); // Sortowanie rosnące po dacie
 
         setMealDescriptions(filteredMeals);
@@ -69,8 +75,21 @@ function OrderForm() {
   };
 
   const handleOrderSubmit = async (meal) => {
-    const orderDateLocal = new Date(meal.date).toISOString().split('T')[0];
-    
+    const now = new Date();
+    const mealDate = new Date(meal.date);
+  
+    // Ustawienie godziny 8:30 rano na dzień zamówienia
+    const cutoffTime = new Date(mealDate);
+    cutoffTime.setHours(8, 30, 0, 0);  // Ustawienie godziny 8:30 rano
+  
+    // Sprawdzenie, czy obecny czas jest przed 8:30 rano danego dnia
+    if (now > cutoffTime) {
+      alert(`Możliwość zamówienia obiadu na dzień ${formatDate(meal.date)} już minęła.`);
+      return;
+    }
+  
+    const orderDateLocal = mealDate.toISOString().split('T')[0]; // Pobranie daty w formacie YYYY-MM-DD
+  
     // Sprawdzanie, czy zamówienie już istnieje
     if (userOrders.some(order => order.date === orderDateLocal)) {
       alert(`Zamówienie na dzień ${formatDate(orderDateLocal)} już istnieje.`);
@@ -100,9 +119,6 @@ function OrderForm() {
       console.error("Błąd podczas wysyłania zamówienia:", error);
     }
   };
-  
-  
-  
 
   const handleMonthOrderSubmit = async () => {
     if (!selectedMonth) {

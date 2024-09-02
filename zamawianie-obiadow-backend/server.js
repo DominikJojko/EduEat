@@ -386,14 +386,32 @@ app.post('/api/add-order', (req, res) => {
 
 
 app.get('/meal-descriptions', (req, res) => {
-  const query = 'SELECT * FROM meal_descriptions';
-  db.query(query, (err, results) => {
-    if (err) {
-      return res.status(500).send('Błąd serwera');
-    }
-    res.json(results);
+  const now = new Date();
+  now.setHours(now.getHours() + 2); // Dodaj 2 godziny, jeśli serwer działa w UTC
+
+  console.log("Aktualny czas na serwerze:", now);
+
+  const query = `
+    SELECT * FROM meal_descriptions 
+    WHERE date >= ? 
+    OR (date = ? AND TIME(NOW()) <= '08:30:00')
+    ORDER BY date ASC;
+  `;
+
+  const today = now.toISOString().split('T')[0];
+  console.log("Data dzisiejsza:", today);
+
+  db.query(query, [today, today], (err, results) => {
+      if (err) {
+          console.error('Błąd zapytania do bazy:', err);
+          return res.status(500).send('Błąd serwera');
+      }
+
+      console.log("Wyniki zapytania:", results);
+      res.json(results);
   });
 });
+
 
 app.get('/api/orders', (req, res) => {
   const { userId, filter, page = 1, limit = 10, start, end, class: classId, user } = req.query;
