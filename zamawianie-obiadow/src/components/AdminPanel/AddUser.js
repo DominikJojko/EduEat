@@ -18,7 +18,7 @@ function AddUser() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
@@ -63,9 +63,25 @@ function AddUser() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const passwordError = validatePassword(userData.password);
-    if (passwordError) {
-      setError(passwordError);
+    const newErrors = {};
+
+    // Sprawdzanie, czy wszystkie pola są wypełnione
+    if (!userData.login) newErrors.login = 'Login jest wymagany';
+    if (!userData.password) {
+      newErrors.password = 'Hasło jest wymagane';
+    } else {
+      const passwordError = validatePassword(userData.password);
+      if (passwordError) {
+        newErrors.password = passwordError;
+      }
+    }
+    if (!userData.imie) newErrors.imie = 'Imię jest wymagane';
+    if (!userData.nazwisko) newErrors.nazwisko = 'Nazwisko jest wymagane';
+    if (!userData.klasa) newErrors.klasa = 'Klasa jest wymagana';
+    if (!userData.role_id) newErrors.role_id = 'Rola jest wymagana';
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       setSuccess('');
       return;
     }
@@ -80,7 +96,7 @@ function AddUser() {
     .then(response => response.json())
     .then(data => {
       if (data.exists) {
-        setError('Użytkownik o tym loginie już istnieje');
+        setErrors({ login: 'Użytkownik o tym loginie już istnieje' });
       } else {
         fetch('http://localhost:5000/api/add-user', {
           method: 'POST',
@@ -97,8 +113,6 @@ function AddUser() {
         })
         .then(data => {
           alert(data.message);
-          console.log(data);
-          // Resetowanie formularza po dodaniu nowego użytkownika
           setUserData({
             login: '',
             password: '',
@@ -107,9 +121,8 @@ function AddUser() {
             klasa: '',
             role_id: ''
           });
-          setError('');
+          setErrors({});
           setSuccess('Użytkownik dodany pomyślnie');
-          // Odśwież listę użytkowników po dodaniu nowego użytkownika
           fetch('http://localhost:5000/api/users')
             .then(response => response.json())
             .then(data => setUsers(data))
@@ -156,16 +169,20 @@ function AddUser() {
   return (
     <div className="add-user-container">
       <h1>Dodaj użytkownika</h1>
-      {error && <p className="error">{error}</p>}
+      {errors.general && <p className="error">{errors.general}</p>}
       {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit} className="add-user-form">
-        <input
-          type="text"
-          name="login"
-          value={userData.login}
-          onChange={handleChange}
-          placeholder="Login"
-        />
+        <div>
+          <input
+            type="text"
+            name="login"
+            value={userData.login}
+            onChange={handleChange}
+            placeholder="Login"
+            required
+          />
+          {errors.login && <p className="error">{errors.login}</p>}
+        </div>
         <div className="password-container">
           <input
             type={showPassword ? 'text' : 'password'}
@@ -173,6 +190,7 @@ function AddUser() {
             value={userData.password}
             onChange={handleChange}
             placeholder="Hasło"
+            required
           />
           <button
             type="button"
@@ -181,33 +199,48 @@ function AddUser() {
           >
             👁️
           </button>
+          {errors.password && <p className="error">{errors.password}</p>}
         </div>
-        <input
-          type="text"
-          name="imie"
-          value={userData.imie}
-          onChange={handleChange}
-          placeholder="Imię"
-        />
-        <input
-          type="text"
-          name="nazwisko"
-          value={userData.nazwisko}
-          onChange={handleChange}
-          placeholder="Nazwisko"
-        />
-        <select name="klasa" value={userData.klasa} onChange={handleChange}>
-          <option value="">Wybierz klasę</option>
-          {classes.map(cls => (
-            <option key={cls.id} value={cls.id}>{cls.name}</option>
-          ))}
-        </select>
-        <select name="role_id" value={userData.role_id} onChange={handleChange}>
-          <option value="">Wybierz rolę</option>
-          {roles.map(role => (
-            <option key={role.id} value={role.id}>{role.name}</option>
-          ))}
-        </select>
+        <div>
+          <input
+            type="text"
+            name="imie"
+            value={userData.imie}
+            onChange={handleChange}
+            placeholder="Imię"
+            required
+          />
+          {errors.imie && <p className="error">{errors.imie}</p>}
+        </div>
+        <div>
+          <input
+            type="text"
+            name="nazwisko"
+            value={userData.nazwisko}
+            onChange={handleChange}
+            placeholder="Nazwisko"
+            required
+          />
+          {errors.nazwisko && <p className="error">{errors.nazwisko}</p>}
+        </div>
+        <div>
+          <select name="klasa" value={userData.klasa} onChange={handleChange} required>
+            <option value="">Wybierz klasę</option>
+            {classes.map(cls => (
+              <option key={cls.id} value={cls.id}>{cls.name}</option>
+            ))}
+          </select>
+          {errors.klasa && <p className="error">{errors.klasa}</p>}
+        </div>
+        <div>
+          <select name="role_id" value={userData.role_id} onChange={handleChange} required>
+            <option value="">Wybierz rolę</option>
+            {roles.map(role => (
+              <option key={role.id} value={role.id}>{role.name}</option>
+            ))}
+          </select>
+          {errors.role_id && <p className="error">{errors.role_id}</p>}
+        </div>
         <button type="submit">Dodaj użytkownika</button>
       </form>
 
