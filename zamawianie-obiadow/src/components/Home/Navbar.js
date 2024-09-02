@@ -29,7 +29,7 @@ function Navbar() {
 
       {isAuthenticated && (
         <div className="welcome-message">
-          Witamy {user.username}, smacznego!
+          Witamy <span>{user.username}</span>, smacznego!
         </div>
       )}
 
