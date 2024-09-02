@@ -10,8 +10,8 @@ function Register() {
     klasa: ''
   });
   const [classes, setClasses] = useState([]);
-  const [showPassword, setShowPassword] = useState(false); // State do pokazywania hasła
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState({});
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
@@ -46,9 +46,21 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const newErrors = {};
+
+    // Walidacja dla każdego pola
+    if (!userData.imie) newErrors.imie = 'Imię jest wymagane';
+    if (!userData.nazwisko) newErrors.nazwisko = 'Nazwisko jest wymagane';
+    if (!userData.klasa) newErrors.klasa = 'Klasa jest wymagana';
+    if (!userData.login) newErrors.login = 'Login jest wymagany';
+
     const passwordError = validatePassword(userData.password);
     if (passwordError) {
-      setError(passwordError);
+      newErrors.password = passwordError;
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setError(newErrors);
       setSuccess('');
       return;
     }
@@ -63,15 +75,15 @@ function Register() {
     .then(response => response.json())
     .then(data => {
       if (data.exists) {
-        setError('Użytkownik o tym loginie już istnieje');
+        setError({ login: 'Użytkownik o tym loginie już istnieje' });
         setSuccess('');
       } else {
-        registerUser(); // Funkcja do rejestracji użytkownika
+        registerUser();
       }
     })
     .catch(error => {
       console.error('Error checking user:', error);
-      setError('Błąd podczas sprawdzania użytkownika');
+      setError({ general: 'Błąd podczas sprawdzania użytkownika' });
       setSuccess('');
     });
   };
@@ -92,8 +104,8 @@ function Register() {
     })
     .then(data => {
       setSuccess(data.message);
-      setError('');
-      setUserData({ // Resetowanie formularza
+      setError({});
+      setUserData({
         login: '',
         password: '',
         imie: '',
@@ -103,7 +115,7 @@ function Register() {
     })
     .catch(error => {
       console.error('Error registering user:', error);
-      setError('Błąd podczas rejestracji');
+      setError({ general: 'Błąd podczas rejestracji' });
       setSuccess('');
     });
   };
@@ -115,42 +127,54 @@ function Register() {
   return (
     <div className="register-container">
       <h1>Rejestracja</h1>
-      {error && <p className="error">{error}</p>}
+      {error.general && <p className="error">{error.general}</p>}
       {success && <p className="success">{success}</p>}
       <form onSubmit={handleSubmit} className="register-form">
-        <input
-          type="text"
-          name="imie"
-          value={userData.imie}
-          onChange={handleChange}
-          placeholder="Imię"
-          required
-        />
-        <input
-          type="text"
-          name="nazwisko"
-          value={userData.nazwisko}
-          onChange={handleChange}
-          placeholder="Nazwisko"
-          required
-        />
-        <select name="klasa" value={userData.klasa} onChange={handleChange} required>
-          <option value="">Wybierz klasę</option>
-          {classes.map(cls => (
-            <option key={cls.id} value={cls.id}>{cls.name}</option>
-          ))}
-        </select>
+        <div>
+          <input
+            type="text"
+            name="imie"
+            value={userData.imie}
+            onChange={handleChange}
+            placeholder="Imię"
+            required
+          />
+          {error.imie && <p className="error">{error.imie}</p>}
+        </div>
+        <div>
+          <input
+            type="text"
+            name="nazwisko"
+            value={userData.nazwisko}
+            onChange={handleChange}
+            placeholder="Nazwisko"
+            required
+          />
+          {error.nazwisko && <p className="error">{error.nazwisko}</p>}
+        </div>
+        <div>
+          <select name="klasa" value={userData.klasa} onChange={handleChange} required>
+            <option value="">Wybierz klasę</option>
+            {classes.map(cls => (
+              <option key={cls.id} value={cls.id}>{cls.name}</option>
+            ))}
+          </select>
+          {error.klasa && <p className="error">{error.klasa}</p>}
+        </div>
 
         <div className="spacer"></div>
 
-        <input
-          type="text"
-          name="login"
-          value={userData.login}
-          onChange={handleChange}
-          placeholder="Login"
-          required
-        />
+        <div>
+          <input
+            type="text"
+            name="login"
+            value={userData.login}
+            onChange={handleChange}
+            placeholder="Login"
+            required
+          />
+          {error.login && <p className="error">{error.login}</p>}
+        </div>
         
         <div className="password-container">
           <input
@@ -168,6 +192,7 @@ function Register() {
           >
             {showPassword ? 'Ukryj' : 'Pokaż'}
           </button>
+          {error.password && <p className="error">{error.password}</p>}
         </div>
         
         <button type="submit">Zarejestruj się</button>

@@ -133,14 +133,11 @@ app.post('/api/register-user', (req, res) => {
           console.error('Błąd dodawania salda użytkownika:', err);
           return res.status(500).json({ error: 'Błąd serwera przy dodawaniu salda użytkownika' });
         }
-        res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta. Saldo użytkownika zostało utworzone.' });
+        res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta.' });
       });
     });
   });
 });
-
-
-
 
 
 app.post('/api/create-meals', (req, res) => {
