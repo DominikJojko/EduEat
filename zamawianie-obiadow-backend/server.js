@@ -484,6 +484,86 @@ app.put('/api/price', (req, res) => {
 });
 
 
+app.get('/api/users-manage', (req, res) => {
+  const search = req.query.search || '';
+  const query = `
+    SELECT u.*, ub.balance, ub.note FROM user u
+    LEFT JOIN user_balance ub ON u.id = ub.user_id
+    WHERE u.imie LIKE ? OR u.nazwisko LIKE ? OR u.login LIKE ?`;
+
+  db.query(query, [`%${search}%`, `%${search}%`, `%${search}%`], (err, results) => {
+    if (err) {
+      console.error('Błąd podczas pobierania użytkowników:', err);
+      return res.status(500).send('Błąd serwera');
+    }
+    res.json(results);
+  });
+});
+
+app.put('/api/users-manage/:id', (req, res) => {
+  const userId = req.params.id;
+  const { imie, nazwisko, klasa, login, password, role_id, status_id, balance, note } = req.body;
+
+  let updateUserQuery = `
+    UPDATE user SET imie = ?, nazwisko = ?, class_id = ?, login = ?, role_id = ?, status_id = ? WHERE id = ?`;
+  const updateUserValues = [imie, nazwisko, klasa, login, role_id, status_id, userId];
+
+  const updateBalanceQuery = `
+    UPDATE user_balance SET balance = ?, note = ? WHERE user_id = ?`;
+  const updateBalanceValues = [balance, note, userId];
+
+  if (password) {
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+      if (err) {
+        console.error('Błąd podczas hashowania hasła:', err);
+        return res.status(500).send('Błąd serwera');
+      }
+      updateUserQuery = `
+        UPDATE user SET imie = ?, nazwisko = ?, class_id = ?, login = ?, password = ?, role_id = ?, status_id = ? WHERE id = ?`;
+      updateUserValues.splice(4, 0, hashedPassword);
+
+      db.query(updateUserQuery, updateUserValues, (err, result) => {
+        if (err) {
+          console.error('Błąd podczas aktualizacji użytkownika:', err);
+          return res.status(500).send('Błąd serwera');
+        }
+
+        db.query(updateBalanceQuery, updateBalanceValues, (err, result) => {
+          if (err) {
+            console.error('Błąd podczas aktualizacji salda:', err);
+            return res.status(500).send('Błąd serwera');
+          }
+
+          res.json({ message: 'Dane użytkownika zaktualizowane pomyślnie.' });
+        });
+      });
+    });
+  } else {
+    db.query(updateUserQuery, updateUserValues, (err, result) => {
+      if (err) {
+        console.error('Błąd podczas aktualizacji użytkownika:', err);
+        return res.status(500).send('Błąd serwera');
+      }
+
+      db.query(updateBalanceQuery, updateBalanceValues, (err, result) => {
+        if (err) {
+          console.error('Błąd podczas aktualizacji salda:', err);
+          return res.status(500).send('Błąd serwera');
+        }
+
+        res.json({ message: 'Dane użytkownika zaktualizowane pomyślnie.' });
+      });
+    });
+  }
+});
+
+
+
+
+
+
+
+
 app.get('/api/orders', (req, res) => {
   const { userId, filter, page = 1, limit = 10, start, end, class: classId, user } = req.query;
   const offset = (page - 1) * limit;
