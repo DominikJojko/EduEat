@@ -27,7 +27,7 @@
   }
   
   .cancel-button {
-    background-color: red;
+    background-color: rgba(255, 0, 0, 0.637);
     color: white;
     border: none;
     padding: 7px 14px; /* Increased padding */

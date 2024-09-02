@@ -21,7 +21,11 @@ function UserProfile() {
         }
         const data = await response.json();
         console.log('Fetched orders:', data); // Logowanie odpowiedzi z serwera
-        setOrders(data.orders || []);
+
+        // Sortowanie zamówień rosnąco po dacie
+        const sortedOrders = data.orders.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        setOrders(sortedOrders || []);
         setTotalPages(Math.ceil(data.totalCount / limit));
       } catch (error) {
         console.error('Error:', error.message);
