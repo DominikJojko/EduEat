@@ -21,15 +21,35 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <NavLink to="/" className="brand-logo"><video autoPlay loop muted height="60"> <source src={logoVideo} type="video/mp4" /> </video> </NavLink>
+      <NavLink to="/" className="brand-logo">
+        <video autoPlay loop muted height="60">
+          <source src={logoVideo} type="video/mp4" />
+        </video>
+      </NavLink>
+
+      {isAuthenticated && (
+        <div className="welcome-message">
+          Witamy {user.username}, smacznego!
+        </div>
+      )}
+
       <div className="nav-links">
-        <NavLink to="/order" className={({ isActive }) => (isActive ? 'active-link' : '')}><OrderIcon className="nav-icon" /> </NavLink>
-        <NavLink to="/about" className={({ isActive }) => (isActive ? 'active-link' : '')}><AboutIcon className="nav-icon" /> </NavLink>
+        <NavLink to="/order" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+          <OrderIcon className="nav-icon" />
+        </NavLink>
+        <NavLink to="/about" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+          <AboutIcon className="nav-icon" />
+        </NavLink>
         {isAuthenticated && user.role_id === 3 && (
-          <NavLink to="/admin-panel" className={({ isActive }) => (isActive ? 'active-link' : '')}> <AdminIcon className="nav-icon" /> </NavLink>
+          <NavLink to="/admin-panel" className={({ isActive }) => (isActive ? 'active-link' : '')}>
+            <AdminIcon className="nav-icon" />
+          </NavLink>
         )}
-        {isAuthenticated ? (<>
-          <NavLink to="/user-profile" className={({ isActive }) => isActive ? 'active-link' : ''}><ProfileIcon className="nav-icon" /> </NavLink>
+        {isAuthenticated ? (
+          <>
+            <NavLink to="/user-profile" className={({ isActive }) => isActive ? 'active-link' : ''}>
+              <ProfileIcon className="nav-icon" />
+            </NavLink>
             <button onClick={handleLogout} className="logout-button">
               <LogoutIcon className="nav-icon" />
             </button>
