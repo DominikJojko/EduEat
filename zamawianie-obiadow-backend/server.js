@@ -54,10 +54,22 @@ app.post('/api/add-user', (req, res) => {
         console.error('Błąd dodawania użytkownika:', err);
         return res.status(500).json({ error: 'Błąd serwera przy dodawaniu użytkownika' });
       }
-      res.status(201).json({ message: 'Użytkownik dodany pomyślnie' });
+
+      const userId = result.insertId;  // Pobranie ID nowo dodanego użytkownika
+
+      // Dodanie salda dla nowego użytkownika
+      const balanceQuery = `INSERT INTO user_balance (user_id, balance) VALUES (?, 0.00)`;
+      db.query(balanceQuery, [userId], (err, balanceResult) => {
+        if (err) {
+          console.error('Błąd dodawania salda użytkownika:', err);
+          return res.status(500).json({ error: 'Błąd serwera przy dodawaniu salda użytkownika' });
+        }
+        res.status(201).json({ message: 'Użytkownik dodany pomyślnie wraz z saldem' });
+      });
     });
   });
 });
+
 
 app.post('/api/check-user', (req, res) => {
   const { login } = req.body;
@@ -111,10 +123,22 @@ app.post('/api/register-user', (req, res) => {
         console.error('Błąd dodawania użytkownika:', err);
         return res.status(500).json({ error: 'Błąd serwera przy dodawaniu użytkownika' });
       }
-      res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta.' });
+
+      const userId = result.insertId;  // Pobranie ID nowo dodanego użytkownika
+
+      // Dodanie salda dla nowego użytkownika
+      const balanceQuery = `INSERT INTO user_balance (user_id, balance) VALUES (?, 0.00)`;
+      db.query(balanceQuery, [userId], (err, balanceResult) => {
+        if (err) {
+          console.error('Błąd dodawania salda użytkownika:', err);
+          return res.status(500).json({ error: 'Błąd serwera przy dodawaniu salda użytkownika' });
+        }
+        res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta. Saldo użytkownika zostało utworzone.' });
+      });
     });
   });
 });
+
 
 
 
