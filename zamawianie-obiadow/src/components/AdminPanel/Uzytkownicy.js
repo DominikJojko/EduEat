@@ -14,6 +14,7 @@ function Uzytkownicy() {
     <div className="admin-panel-container">
       <h1 style={{ fontSize: '45px' }}>UŻYTKOWNICY</h1>
       <div className="admin-panel-buttons">
+        <button onClick={() => navigate('/admin-panel/manage-users')}>Zarządzanie użytkownikami</button>
         <button onClick={() => navigate('/admin-panel/add-user')}>Dodaj i usuń użytkownika</button>
         <button onClick={() => navigate('/admin-panel/manage-classes')}>Edycja klas</button>
       </div>

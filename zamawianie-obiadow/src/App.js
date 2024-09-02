@@ -23,6 +23,7 @@ import ManageClasses from './components/AdminPanel/ManageClasses';
 import MakeMeals from './components/AdminPanel/MakeMeals';
 import Obiady from './components/AdminPanel/Obiady';
 import Uzytkownicy from './components/AdminPanel/Uzytkownicy';
+import ManageUsers from './components/AdminPanel/ManageUsers';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
           <Route path="/admin-panel/make-meals" element={<PrivateRoute roleRequired={3}><MakeMeals /></PrivateRoute>} />
           <Route path="/admin-panel/obiady" element={<PrivateRoute roleRequired={3}><Obiady /></PrivateRoute>} />
           <Route path="/admin-panel/uzytkownicy" element={<PrivateRoute roleRequired={3}><Uzytkownicy /></PrivateRoute>} />
+          <Route path="/admin-panel/manage-users" element={<PrivateRoute roleRequired={3}><ManageUsers /></PrivateRoute>} />
           </Routes>
         <Footer />
       </AuthProvider>
