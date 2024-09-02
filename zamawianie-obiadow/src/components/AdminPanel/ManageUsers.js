@@ -68,6 +68,21 @@ function ManageUsers() {
     }));
   };
 
+  const getStatusName = (statusId) => {
+    switch (statusId) {
+      case 1:
+        return 'Nieaktywny';
+      case 2:
+        return 'Aktywny';
+      case 3:
+        return 'Wakacje';
+      case 4:
+        return 'Zablokowany';
+      default:
+        return 'Nieznany';
+    }
+  };  
+
   const handleSave = async () => {
     try {
       await fetch(`http://localhost:5000/api/users-manage/${selectedUser.id}`, {
@@ -99,12 +114,13 @@ function ManageUsers() {
         onChange={(e) => setSearch(e.target.value)}
       />
       <ul className="users-list">
-        {users.map((u) => (
-          <li key={u.id} onClick={() => handleUserSelect(u)}>
-            {u.imie} {u.nazwisko} ({u.login})
-          </li>
-        ))}
-      </ul>
+      {users.map((u) => (
+        <li key={u.id} onClick={() => handleUserSelect(u)}>
+          {u.imie} {u.nazwisko} ({u.login}) - Status: {getStatusName(u.status_id)}
+        </li>
+      ))}
+    </ul>
+
 
       {selectedUser && (
         <div className="user-edit-form">
