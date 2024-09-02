@@ -441,6 +441,8 @@ app.get('/api/orders', (req, res) => {
   const { userId, filter, page = 1, limit = 10, start, end, class: classId, user } = req.query;
   const offset = (page - 1) * limit;
   const currentDate = new Date().toISOString().slice(0, 10);
+  const currentTime = new Date().toISOString().slice(11, 19);
+  const cutoffTime = '08:30:00'; // Ustawienie godziny 8:30 rano
   let whereClause = '1=1';
 
   if (userId) {
@@ -449,9 +451,9 @@ app.get('/api/orders', (req, res) => {
 
   if (filter) {
     if (filter === 'upcoming') {
-      whereClause += ` AND md.date >= '${currentDate}'`;
+      whereClause += ` AND (md.date > '${currentDate}' OR (md.date = '${currentDate}' AND '${currentTime}' <= '${cutoffTime}'))`;
     } else if (filter === 'past') {
-      whereClause += ` AND md.date < '${currentDate}'`;
+      whereClause += ` AND (md.date < '${currentDate}' OR (md.date = '${currentDate}' AND '${currentTime}' > '${cutoffTime}'))`;
     }
   }
 
@@ -506,6 +508,7 @@ app.get('/api/orders', (req, res) => {
     });
   });
 });
+
 
 
 
