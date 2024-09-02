@@ -7,7 +7,16 @@ function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [search, setSearch] = useState('');
-  const [classes, setClasses] = useState([]); // Nowy stan do przechowywania klas
+  const [classes, setClasses] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [filters, setFilters] = useState({
+    classId: '',
+    roleId: '',
+    statusId: ''
+  });
+
+  // Dodajemy stan form do przechowywania danych formularza użytkownika
   const [form, setForm] = useState({
     imie: '',
     nazwisko: '',
@@ -22,12 +31,21 @@ function ManageUsers() {
 
   useEffect(() => {
     fetchUsers();
-    fetchClasses(); // Pobieranie dostępnych klas
-  }, [search]);
+    fetchClasses();
+    fetchRoles();
+    fetchStatuses();
+  }, [search, filters]);
 
   const fetchUsers = async () => {
+    const query = new URLSearchParams({
+      search,
+      classId: filters.classId,
+      roleId: filters.roleId,
+      statusId: filters.statusId
+    }).toString();
+
     try {
-      const response = await fetch(`http://localhost:5000/api/users-manage?search=${search}`);
+      const response = await fetch(`http://localhost:5000/api/users-manage?${query}`);
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -43,6 +61,36 @@ function ManageUsers() {
     } catch (error) {
       console.error('Błąd podczas pobierania klas:', error);
     }
+  };
+
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/roles');
+      const data = await response.json();
+      setRoles(data);
+    } catch (error) {
+      console.error('Błąd podczas pobierania ról:', error);
+    }
+  };
+
+  const fetchStatuses = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/statuses');
+      const data = await response.json();
+      console.log('Statuses:', data); // Dodaj to, aby sprawdzić, jakie dane są zwracane
+      setStatuses(data);
+    } catch (error) {
+      console.error('Błąd podczas pobierania statusów:', error);
+    }
+  };
+  
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [name]: value
+    }));
   };
 
   const handleUserSelect = (user) => {
@@ -113,19 +161,45 @@ function ManageUsers() {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
+      <div className="filters">
+        <select name="classId" value={filters.classId} onChange={handleFilterChange}>
+          <option value="">Wybierz klasę</option>
+          {classes.map((klasa) => (
+            <option key={klasa.id} value={klasa.id}>
+              {klasa.name}
+            </option>
+          ))}
+        </select>
+        <select name="roleId" value={filters.roleId} onChange={handleFilterChange}>
+          <option value="">Wybierz rolę</option>
+          {roles.map((role) => (
+            <option key={role.id} value={role.id}>
+              {role.name}
+            </option>
+          ))}
+        </select>
+        <select name="statusId" value={filters.statusId} onChange={handleFilterChange}>
+          <option value="">Wybierz status</option>
+          {statuses.map((status) => (
+            <option key={status.id} value={status.id}>
+              {status.name}
+            </option>
+          ))}
+        </select>
+      </div>
       <ul className="users-list">
-      {users.map((u) => (
-        <li key={u.id} onClick={() => handleUserSelect(u)}>
-          {u.imie} {u.nazwisko} ({u.login}) - Status: {getStatusName(u.status_id)}
-        </li>
-      ))}
-    </ul>
-
+        {users.map((u) => (
+          <li key={u.id} onClick={() => handleUserSelect(u)}>
+            {u.imie} {u.nazwisko} ({u.login}) - Status: {getStatusName(u.status_id)}
+          </li>
+        ))}
+      </ul>
 
       {selectedUser && (
         <div className="user-edit-form">
           <h2>Edytuj użytkownika</h2>
 
+          {/* Formularz edycji użytkownika */}
           <div className="form-group">
             <label htmlFor="imie">Imię:</label>
             <input

@@ -16,7 +16,7 @@ function Obiady() {
         <div className="admin-panel-buttons">
           <button onClick={() => navigate('/admin-panel/meal-price')}>Cena obiadu</button>
           <button onClick={() => navigate('/admin-panel/list-orders')}>Generowanie listy zamówionych obiadów</button>
-          <button onClick={() => navigate('/admin-panel/make-meals')}>Zarządzaj obiadami</button>
+          <button onClick={() => navigate('/admin-panel/make-meals')}>Zarządzaj kalendarzem obiadów</button>
         </div>
       </div>
     );

@@ -504,12 +504,34 @@ app.put('/api/price', (req, res) => {
 
 app.get('/api/users-manage', (req, res) => {
   const search = req.query.search || '';
-  const query = `
+  const classId = req.query.classId || '';
+  const roleId = req.query.roleId || '';
+  const statusId = req.query.statusId || '';
+
+  let query = `
     SELECT u.*, ub.balance, ub.note FROM user u
     LEFT JOIN user_balance ub ON u.id = ub.user_id
-    WHERE u.imie LIKE ? OR u.nazwisko LIKE ? OR u.login LIKE ?`;
+    WHERE (u.imie LIKE ? OR u.nazwisko LIKE ? OR u.login LIKE ?)
+  `;
+  
+  const queryParams = [`%${search}%`, `%${search}%`, `%${search}%`];
 
-  db.query(query, [`%${search}%`, `%${search}%`, `%${search}%`], (err, results) => {
+  if (classId) {
+    query += ' AND u.class_id = ?';
+    queryParams.push(classId);
+  }
+
+  if (roleId) {
+    query += ' AND u.role_id = ?';
+    queryParams.push(roleId);
+  }
+
+  if (statusId) {
+    query += ' AND u.status_id = ?';
+    queryParams.push(statusId);
+  }
+
+  db.query(query, queryParams, (err, results) => {
     if (err) {
       console.error('Błąd podczas pobierania użytkowników:', err);
       return res.status(500).send('Błąd serwera');
@@ -517,6 +539,21 @@ app.get('/api/users-manage', (req, res) => {
     res.json(results);
   });
 });
+
+
+app.get('/api/statuses', (req, res) => {
+  console.log('Zapytanie o statusy odebrane.');
+  const statuses = [
+    { id: 1, name: 'Nieaktywny' },
+    { id: 2, name: 'Aktywny' },
+    { id: 3, name: 'Wakacje' },
+    { id: 4, name: 'Zablokowany' },
+  ];
+
+  res.json(statuses);
+});
+
+
 
 app.put('/api/users-manage/:id', (req, res) => {
   const userId = req.params.id;
