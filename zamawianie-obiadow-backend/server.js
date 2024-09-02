@@ -391,19 +391,40 @@ app.post('/api/add-order', (req, res) => {
       return res.status(409).json({ error: 'Zamówienie na ten obiad już istnieje' });
     }
 
-    const insertOrderQuery = 'INSERT INTO order_meals (user_id, meal_id) VALUES (?, ?)';
-    console.log('Executing insertOrderQuery with values:', [userId, mealId]);
-    db.query(insertOrderQuery, [userId, mealId], (err, result) => {
+    // Pobieranie ceny obiadu
+    const priceQuery = 'SELECT amount FROM price WHERE id = 1';
+    db.query(priceQuery, (err, priceResult) => {
       if (err) {
-        console.error('Błąd podczas dodawania zamówienia:', err);
-        return res.status(500).json({ error: 'Błąd serwera' });
+        console.error('Błąd podczas pobierania ceny obiadu:', err);
+        return res.status(500).json({ error: 'Błąd serwera przy pobieraniu ceny obiadu' });
       }
 
-      console.log('Order added successfully for userId:', userId, 'and mealId:', mealId);
-      res.json({ message: 'Zamówienie dodane pomyślnie' });
+      const mealPrice = priceResult[0].amount;
+
+      const insertOrderQuery = 'INSERT INTO order_meals (user_id, meal_id) VALUES (?, ?)';
+      console.log('Executing insertOrderQuery with values:', [userId, mealId]);
+      db.query(insertOrderQuery, [userId, mealId], (err, result) => {
+        if (err) {
+          console.error('Błąd podczas dodawania zamówienia:', err);
+          return res.status(500).json({ error: 'Błąd serwera' });
+        }
+
+        // Zmniejszenie salda użytkownika o cenę obiadu
+        const updateBalanceQuery = 'UPDATE user_balance SET balance = balance - ? WHERE user_id = ?';
+        db.query(updateBalanceQuery, [mealPrice, userId], (err, updateResult) => {
+          if (err) {
+            console.error('Błąd podczas aktualizacji salda:', err);
+            return res.status(500).json({ error: 'Błąd serwera przy aktualizacji salda' });
+          }
+
+          console.log('Order added successfully for userId:', userId, 'and mealId:', mealId);
+          res.json({ message: 'Zamówienie dodane pomyślnie' });
+        });
+      });
     });
   });
 });
+
 
 
 app.get('/meal-descriptions', (req, res) => {
@@ -660,15 +681,54 @@ app.get('/api/users', (req, res) => {
 
 app.delete('/api/cancel-order/:orderId', (req, res) => {
   const { orderId } = req.params;
-  const query = `DELETE FROM order_meals WHERE id = ${orderId}`;
 
-  db.query(query, (err, result) => {
+  // Pobieranie informacji o zamówieniu przed usunięciem
+  const getOrderQuery = 'SELECT user_id FROM order_meals WHERE id = ?';
+  db.query(getOrderQuery, [orderId], (err, orderResult) => {
     if (err) {
-      return res.status(500).json({ error: 'Błąd serwera' });
+      console.error('Błąd podczas pobierania zamówienia:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy pobieraniu zamówienia' });
     }
-    res.json({ message: 'Zamówienie anulowane pomyślnie' });
+
+    if (orderResult.length === 0) {
+      return res.status(404).json({ error: 'Zamówienie nie znalezione' });
+    }
+
+    const userId = orderResult[0].user_id;
+
+    // Pobieranie ceny obiadu
+    const priceQuery = 'SELECT amount FROM price WHERE id = 1';
+    db.query(priceQuery, (err, priceResult) => {
+      if (err) {
+        console.error('Błąd podczas pobierania ceny obiadu:', err);
+        return res.status(500).json({ error: 'Błąd serwera przy pobieraniu ceny obiadu' });
+      }
+
+      const mealPrice = priceResult[0].amount;
+
+      // Usuwanie zamówienia
+      const deleteOrderQuery = 'DELETE FROM order_meals WHERE id = ?';
+      db.query(deleteOrderQuery, [orderId], (err, result) => {
+        if (err) {
+          console.error('Błąd podczas usuwania zamówienia:', err);
+          return res.status(500).json({ error: 'Błąd serwera przy usuwaniu zamówienia' });
+        }
+
+        // Zwiększenie salda użytkownika o cenę obiadu
+        const updateBalanceQuery = 'UPDATE user_balance SET balance = balance + ? WHERE user_id = ?';
+        db.query(updateBalanceQuery, [mealPrice, userId], (err, updateResult) => {
+          if (err) {
+            console.error('Błąd podczas aktualizacji salda:', err);
+            return res.status(500).json({ error: 'Błąd serwera przy aktualizacji salda' });
+          }
+
+          res.json({ message: 'Zamówienie anulowane pomyślnie' });
+        });
+      });
+    });
   });
 });
+
 
 app.post('/api/generate-report', (req, res) => {
   const { start, end } = req.body;
