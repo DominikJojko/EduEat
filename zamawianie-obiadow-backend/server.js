@@ -436,6 +436,28 @@ app.get('/meal-descriptions', (req, res) => {
   });
 });
 
+app.get('/api/user-balance', (req, res) => {
+  const userId = req.query.userId;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Brakujący parametr userId' });
+  }
+
+  const query = 'SELECT balance FROM user_balance WHERE user_id = ?';
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Błąd zapytania do bazy:', err);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Nie znaleziono salda dla tego użytkownika' });
+    }
+
+    res.json({ balance: results[0].balance });
+  });
+});
+
 
 app.get('/api/orders', (req, res) => {
   const { userId, filter, page = 1, limit = 10, start, end, class: classId, user } = req.query;

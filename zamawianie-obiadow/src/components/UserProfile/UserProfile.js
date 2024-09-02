@@ -5,6 +5,7 @@ import './UserProfile.css';
 function UserProfile() {
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
+  const [balance, setBalance] = useState(null);
   const [filter, setFilter] = useState('upcoming');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -20,11 +21,9 @@ function UserProfile() {
           throw new Error('Nie udało się pobrać zamówień');
         }
         const data = await response.json();
-        console.log('Fetched orders:', data); // Logowanie odpowiedzi z serwera
+        console.log('Fetched orders:', data);
 
-        // Sortowanie zamówień rosnąco po dacie
         const sortedOrders = data.orders.sort((a, b) => new Date(a.date) - new Date(b.date));
-
         setOrders(sortedOrders || []);
         setTotalPages(Math.ceil(data.totalCount / limit));
       } catch (error) {
@@ -34,6 +33,25 @@ function UserProfile() {
 
     fetchOrders();
   }, [user, filter, page]);
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!user) return;
+
+      try {
+        const response = await fetch(`http://localhost:5000/api/user-balance?userId=${user.id}`);
+        if (!response.ok) {
+          throw new Error('Nie udało się pobrać salda użytkownika');
+        }
+        const data = await response.json();
+        setBalance(data.balance);
+      } catch (error) {
+        console.error('Error:', error.message);
+      }
+    };
+
+    fetchBalance();
+  }, [user]);
 
   const handleCancelOrder = async (orderId) => {
     try {
@@ -60,10 +78,8 @@ function UserProfile() {
     const now = new Date();
     const orderDate = new Date(dateString);
 
-    // Ustawienie godziny 8:30 rano na dzień zamówienia
     orderDate.setHours(8, 30, 0, 0);
 
-    // Sprawdzenie, czy bieżący czas jest po 8:30 rano dnia zamówienia
     return now > orderDate;
   };
 
@@ -74,6 +90,7 @@ function UserProfile() {
   return (
     <div className="user-profile-container">
       <h1>Mój Profil</h1>
+      {balance !== null && <p>Saldo: {balance} zł</p>}
       <select value={filter} onChange={(e) => setFilter(e.target.value)}>
         <option value="upcoming">Nadchodzące obiady</option>
         <option value="past">Minione obiady</option>
