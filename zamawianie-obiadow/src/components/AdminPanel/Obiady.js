@@ -14,6 +14,7 @@ function Obiady() {
       <div className="admin-panel-container">
         <h1 style={{ fontSize: '45px' }}>OBIADY</h1>
         <div className="admin-panel-buttons">
+          <button onClick={() => navigate('/admin-panel/meal-price')}>Cena obiadu</button>
           <button onClick={() => navigate('/admin-panel/list-orders')}>Generowanie listy zamówionych obiadów</button>
           <button onClick={() => navigate('/admin-panel/make-meals')}>Zarządzaj obiadami</button>
         </div>

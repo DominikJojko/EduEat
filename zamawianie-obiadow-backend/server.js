@@ -458,6 +458,31 @@ app.get('/api/user-balance', (req, res) => {
   });
 });
 
+// GET - Pobieranie aktualnej ceny
+app.get('/api/price', (req, res) => {
+  const query = 'SELECT amount FROM price WHERE id = 1';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Błąd zapytania do bazy:', err);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+    res.json(results[0]);
+  });
+});
+
+// PUT - Aktualizacja ceny
+app.put('/api/price', (req, res) => {
+  const { amount } = req.body;
+  const query = 'UPDATE price SET amount = ? WHERE id = 1';
+  db.query(query, [amount], (err, result) => {
+    if (err) {
+      console.error('Błąd zapytania do bazy:', err);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+    res.json({ message: 'Cena obiadu zaktualizowana pomyślnie' });
+  });
+});
+
 
 app.get('/api/orders', (req, res) => {
   const { userId, filter, page = 1, limit = 10, start, end, class: classId, user } = req.query;
