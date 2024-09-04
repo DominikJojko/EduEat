@@ -17,6 +17,7 @@ function Uzytkownicy() {
         <button onClick={() => navigate('/admin-panel/manage-users')}>Zarządzanie użytkownikami</button>
         <button onClick={() => navigate('/admin-panel/add-user')}>Dodaj i usuń użytkownika</button>
         <button onClick={() => navigate('/admin-panel/manage-classes')}>Edycja klas</button>
+        <button onClick={() => navigate('/admin-panel/end-of-year')}>Zakończenie roku</button>
       </div>
     </div>
   );

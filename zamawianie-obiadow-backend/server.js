@@ -488,6 +488,30 @@ app.get('/api/price', (req, res) => {
   });
 });
 
+app.put('/api/end-of-year', (req, res) => {
+  const { statusId } = req.body;
+
+  if (!statusId) {
+    return res.status(400).json({ error: 'Wymagany jest status.' });
+  }
+
+  const query = `
+    UPDATE user 
+    SET status_id = ? 
+    WHERE role_id = 1;  /* role_id 1 = Użytkownik */
+  `;
+
+  req.db.query(query, [statusId], (err, result) => {
+    if (err) {
+      console.error('Błąd podczas aktualizacji statusów:', err);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+
+    res.json({ message: 'Statusy zaktualizowane pomyślnie.' });
+  });
+});
+
+
 // PUT - Aktualizacja ceny
 app.put('/api/price', (req, res) => {
   const { amount } = req.body;
