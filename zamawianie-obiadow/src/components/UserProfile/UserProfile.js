@@ -89,6 +89,7 @@ function UserProfile() {
 
   return (
     <div className="user-profile-container">
+      <br/>
       <h1>Mój Profil</h1>
       {balance !== null && <p>Saldo: {balance} zł</p>}
       <select value={filter} onChange={(e) => setFilter(e.target.value)}>

@@ -6,7 +6,6 @@ function Home() {
   return (
     <div className="home-container">
       <h1>Witamy w EduEat!</h1>
-      <p>Twoje wygodne i szybkie rozwiązanie do zamawiania obiadów w szkole.</p>
 
       <div className="home-features">
         <section className="feature">
@@ -16,9 +15,11 @@ function Home() {
         </section>
 
         <section className="feature">
-          <h2>O aplikacji</h2>
-          <p>Dowiedz się więcej!</p>
-          <Link to="/about" className="button">O aplikacji</Link>
+          <h2>Zamówienia</h2>
+          <br/>
+          <p>Zobacz zamówione obiady</p>
+          
+          <Link to="/user-profile" className="button">Zamówienia</Link>
         </section>
 
       </div>
