@@ -43,23 +43,50 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
   const { username, password } = req.body;
+  let vacationMessage = ''; // Zdefiniowanie zmiennej przed użyciem
+
   User.findByLogin(req.db, username, (err, user) => {
-    if (err) return res.status(500).json({ error: 'Błąd serwera' });
-    if (!user) return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
-
-    bcrypt.compare(password, user.password, (err, isMatch) => {
       if (err) return res.status(500).json({ error: 'Błąd serwera' });
-      if (!isMatch) return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
+      if (!user) return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
 
-      const token = jwt.sign(
-        { userId: user.id, login: user.login, role_id: user.role_id },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      res.json({ token, username: user.login, role_id: user.role_id, id: user.id });
-    });
+      bcrypt.compare(password, user.password, (err, isMatch) => {
+          if (err) return res.status(500).json({ error: 'Błąd serwera' });
+          if (!isMatch) return res.status(401).json({ error: 'Nieprawidłowy login lub hasło' });
+
+          // Walidacja statusu użytkownika
+          switch (user.status_id) {
+              case 1: // Nieaktywny
+                  return res.status(403).json({ error: 'Twoje konto jest nieaktywne, udaj się do księgowości i aktywuj swoje konto!' });
+              case 2: // Aktywny
+                  break; // Przechodzi do procesu logowania
+              case 3: // Wakacje
+                  vacationMessage = 'Rozpoczął się nowy rok szkolny, wybierz nową klasę';
+                  break;
+              case 4: // Zablokowany
+                  return res.status(403).json({ error: 'Konto zablokowane.' });
+              default:
+                  return res.status(500).json({ error: 'Błąd serwera, nieznany status użytkownika' });
+          }
+
+          // Generowanie tokena JWT i wysyłanie odpowiedzi
+          const token = jwt.sign(
+              { userId: user.id, username: user.login, role_id: user.role_id },
+              process.env.JWT_SECRET,
+              { expiresIn: '1h' }
+          );
+
+          res.json({
+              token,
+              username: user.login,
+              role_id: user.role_id,
+              id: user.id,
+              message: vacationMessage // Dodanie komunikatu, jeśli dotyczy
+          });
+      });
   });
 });
+
+
 
 // Przykładowy endpoint tylko dla admina
 router.get('/admin/some-action', verifyAdmin, (req, res) => {

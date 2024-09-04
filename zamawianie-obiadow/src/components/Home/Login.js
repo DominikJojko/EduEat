@@ -22,17 +22,21 @@ function Login() {
       });
 
       if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Błąd logowania');
-        } else {
-          throw new Error('Błąd serwera, odpowiedź nie jest w formacie JSON');
-        }
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Błąd logowania');
       }
 
       const data = await response.json();
       console.log('Response data:', data);
+
+      if (data.message) {
+        // Obsługa komunikatów (np. status Wakacje)
+        alert(data.message);
+        // Możliwość przekierowania do strony wyboru nowej klasy
+        navigate('/update-class'); // Zastąp właściwą trasą
+      }
+
+      // Kontynuacja logowania
       login(data.token, { username: data.username, role_id: data.role_id, id: data.id }, () => navigate('/order'));
 
     } catch (error) {
@@ -71,3 +75,4 @@ function Login() {
 }
 
 export default Login;
+
