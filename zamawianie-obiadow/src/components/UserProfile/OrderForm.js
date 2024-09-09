@@ -215,35 +215,8 @@ function OrderForm() {
   return (
     <div className="order-form-container">
       <h1><center>Zamówienie Obiadu</center></h1>
-      <table className="meals-table">
-        <thead>
-          <tr>
-            <th>Data</th>
-            <th>Zamów</th>
-          </tr>
-        </thead>
-        <tbody>
-          {mealDescriptions.map((meal) => (
-            <tr key={meal.id}>
-              <td>{formatDate(meal.date)}</td>
-              <td>
-                <button onClick={() => handleOrderSubmit(meal)}>Zamów ten obiad</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <br />
-
-    <div style={{ textAlign: 'center', marginTop: '20px' }}>
-      <a href="" target="_blank" rel="noopener noreferrer">
-        <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu - zmienic link OrderForm.js</button>
-      </a>
-    </div>
-
-      {error && <p className="error-message">{error}</p>}
-
+  
+      {/* Zamówienia długoterminowe przeniesione na górę */}
       <div className="long-term-order">
         <h2>Zamówienia długoterminowe</h2>
         <div className="month-order">
@@ -271,8 +244,36 @@ function OrderForm() {
           <button onClick={handleYearOrderSubmit}>Zamów obiady na cały rok szkolny</button>
         </div>
       </div>
+  
+      <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '20px' }}>
+        <a href="" target="_blank" rel="noopener noreferrer">
+          <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu - zmienic link OrderForm.js</button>
+        </a>
+      </div>
+  
+      <table className="meals-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Zamów</th>
+          </tr>
+        </thead>
+        <tbody>
+          {mealDescriptions.map((meal) => (
+            <tr key={meal.id}>
+              <td>{formatDate(meal.date)}</td>
+              <td>
+                <button onClick={() => handleOrderSubmit(meal)}>Zamów ten obiad</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+  
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
+  
 }
 
 export default OrderForm;
