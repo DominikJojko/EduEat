@@ -20,6 +20,20 @@ const db = mysql.createConnection({
   database: process.env.DB_NAME
 });
 
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
+
+
 db.connect(err => {
   if (err) {
     console.error('Błąd połączenia z bazą danych:', err);
@@ -136,6 +150,29 @@ app.post('/api/register-user', (req, res) => {
         res.status(201).json({ message: 'Rejestracja zakończona pomyślnie, udaj się do księgowości w celu aktywowania konta.' });
       });
     });
+  });
+});
+
+app.put('/api/update-class', authenticateToken, (req, res) => {
+  const userId = req.user.userId;
+  const { classId } = req.body;
+
+  if (!classId) {
+    return res.status(400).json({ error: 'Brak wybranej klasy' });
+  }
+
+  const query = `
+    UPDATE user SET class_id = ?, status_id = 2
+    WHERE id = ?
+  `;
+
+  db.query(query, [classId, userId], (err, result) => {
+    if (err) {
+      console.error('Błąd podczas aktualizacji klasy:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy aktualizacji klasy' });
+    }
+
+    res.json({ message: 'Klasa i status zaktualizowane pomyślnie' });
   });
 });
 

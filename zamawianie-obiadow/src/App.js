@@ -12,6 +12,7 @@ import Home from './components/Home/Home';
 import About from './components/Home/About';
 import Login from './components/Home/Login';
 import Register from './components/Home/Register';
+import UpdateClass from './components/Home/UpdateClass';
 // UserProfile
 import OrderForm from './components/UserProfile/OrderForm';
 import UserProfile from './components/UserProfile/UserProfile'; 
@@ -42,6 +43,7 @@ function App() {
           {/* Funkcjonalności użytkownika */}
           <Route path="/order" element={<PrivateRoute><OrderForm /></PrivateRoute>} />
           <Route path="/user-profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
+          <Route path="/update-class" element={<PrivateRoute><UpdateClass /></PrivateRoute>} />
           
           {/* Funkcjonalności administracyjne (dostępne tylko dla administratorów) */}
           <Route path="/admin-panel" element={<PrivateRoute roleRequired={3}><AdminPanel /></PrivateRoute>} />

@@ -27,17 +27,16 @@ function Login() {
       }
 
       const data = await response.json();
-      console.log('Response data:', data);
 
-      if (data.message) {
-        // Obsługa komunikatów (np. status Wakacje)
-        alert(data.message);
-        // Możliwość przekierowania do strony wyboru nowej klasy
-        navigate('/update-class'); // Zastąp właściwą trasą
-      }
-
-      // Kontynuacja logowania
-      login(data.token, { username: data.username, role_id: data.role_id, id: data.id }, () => navigate('/order'));
+      // Zaloguj użytkownika
+      login(data.token, { username: data.username, role_id: data.role_id, id: data.id }, () => {
+        if (data.needClassUpdate) {
+          alert(data.message);
+          navigate('/update-class');
+        } else {
+          navigate('/order');
+        }
+      });
 
     } catch (error) {
       setError(error.message || 'Nie udało się zalogować');
