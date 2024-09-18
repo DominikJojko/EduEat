@@ -65,7 +65,7 @@ router.post('/login', (req, res) => {
           message = 'Rozpoczął się nowy rok szkolny, wybierz nową klasę';
           break;
         case 4: // Zablokowany
-          return res.status(403).json({ error: 'Konto zablokowane.' });
+          return res.status(403).json({ error: 'Konto zablokowane. Udaj się do księgowości po więcej informacji.' });
         default:
           return res.status(500).json({ error: 'Błąd serwera, nieznany status użytkownika' });
       }
