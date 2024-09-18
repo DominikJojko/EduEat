@@ -14,8 +14,13 @@ function Obiady() {
       <div className="admin-panel-container">
         <h1 style={{ fontSize: '45px' }}>OBIADY</h1>
         <div className="admin-panel-buttons">
+          Tutaj ustalisz cenę obiadu
           <button onClick={() => navigate('/admin-panel/meal-price')}>Cena obiadu</button>
+          ----------------------------------------------------------------
+          Tutaj wygenerujesz listę zamówionych obiadów na wybrany zakres czasowy
           <button onClick={() => navigate('/admin-panel/list-orders')}>Generowanie listy zamówionych obiadów</button>
+          ----------------------------------------------------------------
+          Tutaj zmienisz kalendarz obiadów, czyli wybierzesz dni wolne w które obiady nie będa potrzebne
           <button onClick={() => navigate('/admin-panel/make-meals')}>Zarządzaj kalendarzem obiadów</button>
         </div>
       </div>

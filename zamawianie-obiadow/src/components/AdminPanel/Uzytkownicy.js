@@ -14,9 +14,16 @@ function Uzytkownicy() {
     <div className="admin-panel-container">
       <h1 style={{ fontSize: '45px' }}>UŻYTKOWNICY</h1>
       <div className="admin-panel-buttons">
+        Tutaj zedytujesz wszystkie informacje dotyczące danego użytkownika
         <button onClick={() => navigate('/admin-panel/manage-users')}>Zarządzanie użytkownikami</button>
+        ----------------------------------------------------------------
+        Tutaj ręcznie dodasz uzytkownika do systemu
         <button onClick={() => navigate('/admin-panel/add-user')}>Dodaj i usuń użytkownika</button>
+        ----------------------------------------------------------------
+        Tutaj dodasz i usuniesz klasy szkoły
         <button onClick={() => navigate('/admin-panel/manage-classes')}>Edycja klas</button>
+        ----------------------------------------------------------------
+        Tutaj zmienisz status dla każdego użytkownika w systemie
         <button onClick={() => navigate('/admin-panel/end-of-year')}>Zakończenie roku</button>
       </div>
     </div>
