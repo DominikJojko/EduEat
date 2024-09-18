@@ -27,6 +27,7 @@ import Uzytkownicy from './components/AdminPanel/Uzytkownicy';
 import ManageUsers from './components/AdminPanel/ManageUsers';
 import MealPrice from './components/AdminPanel/MealPrice';
 import EndOfYear from './components/AdminPanel/EndOfYear';
+import UserMealsManagement from './components/AdminPanel/UserMealsManagement';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="/admin-panel/manage-users" element={<PrivateRoute roleRequired={3}><ManageUsers /></PrivateRoute>} />
           <Route path="/admin-panel/meal-price" element={<PrivateRoute roleRequired={3}><MealPrice /></PrivateRoute>} />
           <Route path="/admin-panel/end-of-year" element={<PrivateRoute roleRequired={3}><EndOfYear /></PrivateRoute>} />
+          <Route path="/admin-panel/user-meals" element={<PrivateRoute roleRequired={3}><UserMealsManagement /></PrivateRoute>} />
           </Routes>
         <Footer />
       </AuthProvider>

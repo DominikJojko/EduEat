@@ -33,6 +33,124 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+app.get('/api/all-users', (req, res) => {
+  const query = 'SELECT id, login, imie, nazwisko FROM user';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('Błąd podczas pobierania użytkowników:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy pobieraniu użytkowników' });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/api/search-users', (req, res) => {
+  const term = `%${req.query.term}%`;
+  const query = `
+    SELECT id, login, imie, nazwisko 
+    FROM user 
+    WHERE login LIKE ? OR imie LIKE ? OR nazwisko LIKE ?
+  `;
+  db.query(query, [term, term, term], (err, results) => {
+    if (err) {
+      console.error('Błąd podczas wyszukiwania użytkowników:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy wyszukiwaniu użytkowników' });
+    }
+    res.json(results);
+  });
+});
+
+app.get('/api/admin/user-orders/:userId', (req, res) => {
+  const userId = req.params.userId;
+  const query = `
+    SELECT om.id, md.date 
+    FROM order_meals om 
+    JOIN meal_descriptions md ON om.meal_id = md.id 
+    WHERE om.user_id = ? 
+    ORDER BY md.date
+  `;
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error('Błąd podczas pobierania zamówień użytkownika:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy pobieraniu zamówień' });
+    }
+    res.json(results);
+  });
+});
+
+app.delete('/api/admin/cancel-user-order/:orderId', (req, res) => {
+  const orderId = req.params.orderId;
+
+  // Pobierz cenę obiadu
+  const priceQuery = 'SELECT amount FROM price WHERE id = 1';
+  db.query(priceQuery, (err, priceResult) => {
+    if (err) {
+      console.error('Błąd podczas pobierania ceny obiadu:', err);
+      return res.status(500).json({ error: 'Błąd serwera przy pobieraniu ceny obiadu' });
+    }
+
+    const mealPrice = priceResult[0].amount;
+
+    // Pobierz user_id z orderId
+    const userQuery = 'SELECT user_id FROM order_meals WHERE id = ?';
+    db.query(userQuery, [orderId], (err, userResult) => {
+      if (err) {
+        console.error('Błąd podczas pobierania użytkownika zamówienia:', err);
+        return res.status(500).json({ error: 'Błąd serwera przy pobieraniu użytkownika zamówienia' });
+      }
+
+      if (userResult.length === 0) {
+        return res.status(404).json({ error: 'Zamówienie nie istnieje' });
+      }
+
+      const userId = userResult[0].user_id;
+
+      // Rozpoczęcie transakcji
+      db.beginTransaction((err) => {
+        if (err) {
+          console.error('Błąd podczas rozpoczynania transakcji:', err);
+          return res.status(500).json({ error: 'Błąd serwera przy rozpoczynaniu transakcji' });
+        }
+
+        // Usuń zamówienie
+        const deleteOrderQuery = 'DELETE FROM order_meals WHERE id = ?';
+        db.query(deleteOrderQuery, [orderId], (err, result) => {
+          if (err) {
+            console.error('Błąd podczas usuwania zamówienia:', err);
+            return db.rollback(() => {
+              res.status(500).json({ error: 'Błąd serwera przy usuwaniu zamówienia' });
+            });
+          }
+
+          // Zaktualizuj saldo użytkownika
+          const updateBalanceQuery = 'UPDATE user_balance SET balance = balance + ? WHERE user_id = ?';
+          db.query(updateBalanceQuery, [mealPrice, userId], (err, result) => {
+            if (err) {
+              console.error('Błąd podczas aktualizacji salda użytkownika:', err);
+              return db.rollback(() => {
+                res.status(500).json({ error: 'Błąd serwera przy aktualizacji salda użytkownika' });
+              });
+            }
+
+            // Zatwierdź transakcję
+            db.commit((err) => {
+              if (err) {
+                console.error('Błąd podczas zatwierdzania transakcji:', err);
+                return db.rollback(() => {
+                  res.status(500).json({ error: 'Błąd serwera przy zatwierdzaniu transakcji' });
+                });
+              }
+
+              res.json({ message: 'Zamówienie zostało anulowane, saldo użytkownika zaktualizowane' });
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
+
 
 db.connect(err => {
   if (err) {
@@ -740,11 +858,6 @@ app.put('/api/users-manage/:id', (req, res) => {
     });
   }
 });
-
-
-
-
-
 
 
 
