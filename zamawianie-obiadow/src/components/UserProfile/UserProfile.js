@@ -9,21 +9,42 @@ function UserProfile() {
   const [filter, setFilter] = useState('upcoming');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = 7;
+  const limit = 10;
+
+  const fetchBalance = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/user-balance?userId=${user.id}`
+      );
+      if (!response.ok) {
+        throw new Error('Nie udało się pobrać salda użytkownika');
+      }
+      const data = await response.json();
+      setBalance(data.balance);
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
 
   useEffect(() => {
     const fetchOrders = async () => {
       if (!user) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/orders?userId=${user.id}&filter=${filter}&page=${page}&limit=${limit}`);
+        const response = await fetch(
+          `http://localhost:5000/api/orders?userId=${user.id}&filter=${filter}&page=${page}&limit=${limit}`
+        );
         if (!response.ok) {
           throw new Error('Nie udało się pobrać zamówień');
         }
         const data = await response.json();
         console.log('Fetched orders:', data);
 
-        const sortedOrders = data.orders.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const sortedOrders = data.orders.sort(
+          (a, b) => new Date(a.date) - new Date(b.date)
+        );
         setOrders(sortedOrders || []);
         setTotalPages(Math.ceil(data.totalCount / limit));
       } catch (error) {
@@ -35,31 +56,23 @@ function UserProfile() {
   }, [user, filter, page]);
 
   useEffect(() => {
-    const fetchBalance = async () => {
-      if (!user) return;
-
-      try {
-        const response = await fetch(`http://localhost:5000/api/user-balance?userId=${user.id}`);
-        if (!response.ok) {
-          throw new Error('Nie udało się pobrać salda użytkownika');
-        }
-        const data = await response.json();
-        setBalance(data.balance);
-      } catch (error) {
-        console.error('Error:', error.message);
-      }
-    };
-
     fetchBalance();
   }, [user]);
 
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/cancel-order/${orderId}`, { method: 'DELETE' });
+      const response = await fetch(
+        `http://localhost:5000/api/cancel-order/${orderId}`,
+        { method: 'DELETE' }
+      );
       if (!response.ok) {
         throw new Error('Błąd podczas anulowania zamówienia');
       }
       setOrders(orders.filter(order => order.id !== orderId));
+
+      // Aktualizacja salda po anulowaniu zamówienia
+      fetchBalance();
+
     } catch (error) {
       alert("Błąd podczas anulowania zamówienia: " + error.message);
     }
@@ -98,13 +111,27 @@ function UserProfile() {
       </select>
       {totalPages > 1 && (
         <div className="pagination-controls">
-          <button onClick={() => setPage(prev => Math.max(prev - 1, 1))} disabled={page === 1}>Poprzednia</button>
+          <button
+            onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+          >
+            Poprzednia
+          </button>
           {Array.from({ length: totalPages }, (_, i) => (
-            <button key={i} onClick={() => setPage(i + 1)} disabled={i + 1 === page}>
+            <button
+              key={i}
+              onClick={() => setPage(i + 1)}
+              disabled={i + 1 === page}
+            >
               {i + 1}
             </button>
           ))}
-          <button onClick={() => setPage(prev => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>Następna</button>
+          <button
+            onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+          >
+            Następna
+          </button>
         </div>
       )}
       {Array.isArray(orders) && orders.length > 0 ? (
@@ -122,7 +149,10 @@ function UserProfile() {
                 <td>
                   {isPast(order.date) ? 
                     <span style={{color: 'gray'}}>Nie można anulować obiadu</span> :
-                    <button className="cancel-button" onClick={() => handleCancelOrder(order.id)}>
+                    <button
+                      className="cancel-button"
+                      onClick={() => handleCancelOrder(order.id)}
+                    >
                       Anuluj zamówienie
                     </button>
                   }
