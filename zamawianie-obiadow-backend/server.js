@@ -859,6 +859,117 @@ app.put('/api/users-manage/:id', (req, res) => {
   }
 });
 
+app.delete('/api/delete-meals-for-class', (req, res) => {
+  const { classId, startDate, endDate } = req.body;
+
+  if (!classId || !startDate || !endDate) {
+    return res.status(400).json({ success: false, message: 'Brak wymaganych danych' });
+  }
+
+  // Pobranie listy użytkowników z wybranej klasy
+  const getUsersQuery = 'SELECT id FROM user WHERE class_id = ?';
+  db.query(getUsersQuery, [classId], (err, users) => {
+    if (err) {
+      console.error('Błąd podczas pobierania użytkowników z klasy:', err);
+      return res.status(500).json({ success: false, message: 'Błąd serwera przy pobieraniu użytkowników' });
+    }
+
+    if (users.length === 0) {
+      return res.status(404).json({ success: false, message: 'Brak użytkowników w wybranej klasie' });
+    }
+
+    const userIds = users.map(user => user.id);
+
+    // Pobranie ceny obiadu
+    const priceQuery = 'SELECT amount FROM price WHERE id = 1';
+    db.query(priceQuery, (err, priceResult) => {
+      if (err) {
+        console.error('Błąd podczas pobierania ceny obiadu:', err);
+        return res.status(500).json({ success: false, message: 'Błąd serwera przy pobieraniu ceny obiadu' });
+      }
+
+      const mealPrice = priceResult[0].amount;
+
+      // Rozpoczęcie transakcji
+      db.beginTransaction((err) => {
+        if (err) {
+          console.error('Błąd podczas rozpoczynania transakcji:', err);
+          return res.status(500).json({ success: false, message: 'Błąd serwera przy rozpoczynaniu transakcji' });
+        }
+
+        // Pobranie zamówień do usunięcia
+        const getOrdersQuery = `
+          SELECT om.id, om.user_id
+          FROM order_meals om
+          JOIN meal_descriptions md ON om.meal_id = md.id
+          WHERE om.user_id IN (?) AND md.date BETWEEN ? AND ?
+        `;
+        db.query(getOrdersQuery, [userIds, startDate, endDate], (err, orders) => {
+          if (err) {
+            console.error('Błąd podczas pobierania zamówień:', err);
+            return db.rollback(() => {
+              res.status(500).json({ success: false, message: 'Błąd serwera przy pobieraniu zamówień' });
+            });
+          }
+
+          if (orders.length === 0) {
+            return db.rollback(() => {
+              res.status(404).json({ success: false, message: 'Brak zamówień do usunięcia' });
+            });
+          }
+
+          const orderIds = orders.map(order => order.id);
+
+          // Usunięcie zamówień
+          const deleteOrdersQuery = 'DELETE FROM order_meals WHERE id IN (?)';
+          db.query(deleteOrdersQuery, [orderIds], (err, result) => {
+            if (err) {
+              console.error('Błąd podczas usuwania zamówień:', err);
+              return db.rollback(() => {
+                res.status(500).json({ success: false, message: 'Błąd serwera przy usuwaniu zamówień' });
+              });
+            }
+
+            // Aktualizacja sald użytkowników
+            const updateBalancePromises = orders.map(order => {
+              return new Promise((resolve, reject) => {
+                const updateBalanceQuery = 'UPDATE user_balance SET balance = balance + ? WHERE user_id = ?';
+                db.query(updateBalanceQuery, [mealPrice, order.user_id], (err, result) => {
+                  if (err) {
+                    console.error('Błąd podczas aktualizacji salda dla user_id:', order.user_id, err);
+                    return reject(err);
+                  }
+                  resolve();
+                });
+              });
+            });
+
+            Promise.all(updateBalancePromises)
+              .then(() => {
+                db.commit((err) => {
+                  if (err) {
+                    console.error('Błąd podczas zatwierdzania transakcji:', err);
+                    return db.rollback(() => {
+                      res.status(500).json({ success: false, message: 'Błąd serwera przy zatwierdzaniu transakcji' });
+                    });
+                  }
+
+                  console.log('Obiady zostały usunięte, salda zaktualizowane');
+                  res.json({ success: true, message: 'Obiady usunięte pomyślnie, salda użytkowników zaktualizowane' });
+                });
+              })
+              .catch(err => {
+                console.error('Błąd podczas aktualizacji sald użytkowników:', err);
+                db.rollback(() => {
+                  res.status(500).json({ success: false, message: 'Błąd serwera przy aktualizacji sald użytkowników' });
+                });
+              });
+          });
+        });
+      });
+    });
+  });
+});
 
 
 app.get('/api/orders', (req, res) => {
