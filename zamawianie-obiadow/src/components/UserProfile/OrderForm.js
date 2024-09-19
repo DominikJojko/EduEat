@@ -101,7 +101,7 @@ function OrderForm() {
       const response = await fetch('http://localhost:5000/api/add-order', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ userId: user.id, mealId: meal.id, orderDate: orderDateLocal })
+        body: JSON.stringify({ userId: user.id, mealId: meal.id })
       });
       console.log('Response status:', response.status);
       if (response.ok) {
@@ -125,34 +125,36 @@ function OrderForm() {
       setError('Wybierz zarówno datę początkową, jak i końcową.');
       return;
     }
-
+  
     const start = new Date(startDate);
     const end = new Date(endDate);
-
+  
     if (start > end) {
       setError('Data początkowa nie może być późniejsza niż data końcowa.');
       return;
     }
-
+  
     const confirmation = window.confirm(`Czy na pewno chcesz zamówić obiady w przedziale od ${formatDate(startDate)} do ${formatDate(endDate)}?`);
     if (!confirmation) return;
-
-    // Pobranie opisów obiadów dla wybranego przedziału
+  
     try {
+      // Pobranie opisów obiadów dla wybranego przedziału
+      console.log(`Fetching meals between ${startDate} and ${endDate}`);
       const response = await fetch(`http://localhost:5000/meal-descriptions?startDate=${startDate}&endDate=${endDate}`);
       if (!response.ok) {
         throw new Error('Nie udało się pobrać opisów obiadów dla wybranego przedziału');
       }
       const mealsInRange = await response.json();
+      
       // Mapowanie posiłków po dacie dla szybkiego dostępu
       const mealsMap = new Map();
       mealsInRange.forEach(meal => {
-        mealsMap.set(meal.date, meal);
+        mealsMap.set(meal.date, meal); // meal.date jest teraz 'YYYY-MM-DD'
       });
-
+  
       // Aktualizacja zamówień użytkownika
       await fetchUserOrders();
-
+  
       const daysArray = [];
       for (let day = new Date(start); day <= end; day.setDate(day.getDate() + 1)) {
         if (day.getDay() !== 0 && day.getDay() !== 6) { // pomijanie sobót i niedziel
@@ -160,7 +162,7 @@ function OrderForm() {
           daysArray.push(dateStr);
         }
       }
-
+  
       for (let date of daysArray) {
         const meal = mealsMap.get(date);
         if (!meal) {
@@ -171,23 +173,38 @@ function OrderForm() {
           console.log(`Zamówienie na dzień ${formatDate(date)} już istnieje.`);
           continue;
         }
-
-        const response = await fetch('http://localhost:5000/api/add-order', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ userId: user.id, mealId: meal.id, orderDate: date })
-        });
-        if (!response.ok && response.status !== 409) {
-          throw new Error('Błąd podczas wysyłania zamówienia');
+  
+        try {
+          const response = await fetch('http://localhost:5000/api/add-order', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ userId: user.id, mealId: meal.id }) // Usunięcie orderDate
+          });
+  
+          if (response.ok) {
+            console.log(`Zamówienie na dzień ${formatDate(date)} zostało złożone.`);
+            // Opcjonalnie, możesz dodać zamówienie do stanu userOrders bez ponownego pobierania wszystkich zamówień
+          } else if (response.status === 409) {
+            const data = await response.json();
+            console.log('Conflict error message:', data.error);
+            alert(`Zamówienie na dzień ${formatDate(date)} już istnieje.`);
+          } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Błąd podczas wysyłania zamówienia');
+          }
+        } catch (error) {
+          console.error(`Błąd przy zamawianiu obiadu na dzień ${formatDate(date)}:`, error);
+          alert(`Błąd przy zamawianiu obiadu na dzień ${formatDate(date)}: ${error.message}`);
         }
       }
-      alert(`Zamówiłeś obiady w przedziale od ${formatDate(startDate)} do ${formatDate(endDate)}`);
+      alert(`Zamówiłeś obiady w przedziale od ${formatDate(startDate)} do ${formatDate(endDate)}.`);
       fetchUserOrders(); // Pobranie zamówień użytkownika po dodaniu nowych zamówień
     } catch (error) {
       alert("Błąd podczas wysyłania zamówienia: " + error.message);
       console.error("Błąd podczas wysyłania zamówienia:", error);
     }
   };
+  
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -218,8 +235,8 @@ function OrderForm() {
       </div>
 
       <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '20px' }}>
-        <a href="" target="_blank" rel="noopener noreferrer">
-          <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu - zmienic link OrderForm.js</button>
+        <a href="#" target="_blank" rel="noopener noreferrer">
+          <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu - zmienić link OrderForm.js</button>
         </a>
       </div>
 
@@ -232,7 +249,7 @@ function OrderForm() {
         </thead>
         <tbody>
           {mealDescriptions.map((meal) => {
-            const mealDateStr = meal.date;
+            const mealDateStr = meal.date; // 'YYYY-MM-DD'
             const isOrdered = userOrders.some(order => order.date === mealDateStr);
 
             return (

@@ -584,10 +584,10 @@ app.get('/api/meals', (req, res) => {
 });
 
 app.post('/api/add-order', (req, res) => {
-  const { userId, mealId, orderDate } = req.body;
-  console.log('Received order:', { userId, mealId, orderDate });
+  const { userId, mealId } = req.body;
+  console.log('Received order:', { userId, mealId });
 
-  if (!userId || !mealId || !orderDate) {
+  if (!userId || !mealId) {
     console.log("Brakujące dane: ", req.body);
     return res.status(400).json({ error: 'Brakujące dane' });
   }
@@ -611,7 +611,7 @@ app.post('/api/add-order', (req, res) => {
     console.log('checkOrderQuery results:', results);
     if (results.length > 0) {
       console.log('Order already exists for userId:', userId, 'and mealId:', mealId);
-      return res.status(409).json({ error: 'Zamówienie na ten obiad już istnieje' });
+      return res.status(409).json({ error: 'Zamówienie na ten obiad już istnieje na wybrany dzień' });
     }
 
     // Pobieranie ceny obiadu
@@ -629,7 +629,7 @@ app.post('/api/add-order', (req, res) => {
       db.query(insertOrderQuery, [userId, mealId], (err, result) => {
         if (err) {
           console.error('Błąd podczas dodawania zamówienia:', err);
-          return res.status(500).json({ error: 'Błąd serwera' });
+          return res.status(500).json({ error: 'Błąd serwera przy dodawaniu zamówienia' });
         }
 
         // Zmniejszenie salda użytkownika o cenę obiadu
@@ -650,32 +650,49 @@ app.post('/api/add-order', (req, res) => {
 
 
 
+
+
 app.get('/meal-descriptions', (req, res) => {
   const now = new Date();
   now.setHours(now.getHours() + 2); // Dodaj 2 godziny, jeśli serwer działa w UTC
 
   console.log("Aktualny czas na serwerze:", now);
 
-  const query = `
-    SELECT * FROM meal_descriptions 
-    WHERE date >= ? 
-    OR (date = ? AND TIME(NOW()) <= '08:30:00')
-    ORDER BY date ASC;
-  `;
-
   const today = now.toISOString().split('T')[0];
-  console.log("Data dzisiejsza:", today);
+  const startDate = req.query.startDate;
+  const endDate = req.query.endDate;
 
-  db.query(query, [today, today], (err, results) => {
-      if (err) {
-          console.error('Błąd zapytania do bazy:', err);
-          return res.status(500).send('Błąd serwera');
-      }
+  let query = `
+    SELECT id, DATE_FORMAT(date, '%Y-%m-%d') AS date
+    FROM meal_descriptions 
+    WHERE date >= ? 
+    ORDER BY date ASC
+  `;
+  let queryParams = [today];
 
-      console.log("Wyniki zapytania:", results);
-      res.json(results);
+  if (startDate && endDate) {
+    query = `
+      SELECT id, DATE_FORMAT(date, '%Y-%m-%d') AS date
+      FROM meal_descriptions 
+      WHERE date BETWEEN ? AND ?
+      ORDER BY date ASC
+    `;
+    queryParams = [startDate, endDate];
+  }
+
+  db.query(query, queryParams, (err, results) => {
+    if (err) {
+      console.error('Błąd zapytania do bazy:', err);
+      return res.status(500).send('Błąd serwera');
+    }
+
+    console.log("Wyniki zapytania:", results);
+    res.json(results);
   });
 });
+
+
+
 
 app.get('/api/user-balance', (req, res) => {
   const userId = req.query.userId;
@@ -1251,7 +1268,13 @@ app.post('/api/generate-report', (req, res) => {
 
 app.get('/api/user-orders/:userId', (req, res) => {
   const userId = req.params.userId;
-  const query = `SELECT om.id, md.date FROM order_meals om JOIN meal_descriptions md ON om.meal_id = md.id WHERE om.user_id = ? ORDER BY md.date`;
+  const query = `
+    SELECT om.id, DATE_FORMAT(md.date, '%Y-%m-%d') AS date 
+    FROM order_meals om 
+    JOIN meal_descriptions md ON om.meal_id = md.id 
+    WHERE om.user_id = ? 
+    ORDER BY md.date
+  `;
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error('Błąd zapytania do bazy:', err);
@@ -1260,6 +1283,7 @@ app.get('/api/user-orders/:userId', (req, res) => {
     res.json(results);
   });
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
