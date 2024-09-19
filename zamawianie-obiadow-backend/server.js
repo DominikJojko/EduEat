@@ -1021,6 +1021,13 @@ app.get('/api/orders', (req, res) => {
     whereClause += ` AND om.user_id = ${db.escape(user)}`;
   }
 
+  // Ustalanie sortowania na podstawie filtra
+  let orderByClause = 'ORDER BY md.date DESC'; // Domyślne sortowanie dla 'past'
+
+  if (filter === 'upcoming') {
+    orderByClause = 'ORDER BY md.date ASC'; // Sortowanie rosnące dla 'upcoming'
+  }
+
   const queryOrders = `
     SELECT om.id, md.date, u.nazwisko, u.imie, c.name AS klasa
     FROM order_meals om
@@ -1028,7 +1035,7 @@ app.get('/api/orders', (req, res) => {
     JOIN user u ON om.user_id = u.id
     JOIN class c ON u.class_id = c.id
     WHERE ${whereClause}
-    ORDER BY md.date DESC
+    ${orderByClause}
     LIMIT ${parseInt(limit, 10)} OFFSET ${parseInt(offset, 10)}
   `;
 

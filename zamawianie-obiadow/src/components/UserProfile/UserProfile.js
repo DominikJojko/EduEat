@@ -1,5 +1,8 @@
+// src/components/UserProfile/UserProfile.js
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 import './UserProfile.css';
 
 function UserProfile() {
@@ -11,6 +14,7 @@ function UserProfile() {
   const [totalPages, setTotalPages] = useState(0);
   const limit = 10;
 
+  // Funkcja do pobierania salda użytkownika
   const fetchBalance = async () => {
     if (!user) return;
 
@@ -28,37 +32,47 @@ function UserProfile() {
     }
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user) return;
+  // Funkcja do pobierania zamówień użytkownika
+  const fetchOrders = async () => {
+    if (!user) return;
 
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/orders?userId=${user.id}&filter=${filter}&page=${page}&limit=${limit}`
-        );
-        if (!response.ok) {
-          throw new Error('Nie udało się pobrać zamówień');
-        }
-        const data = await response.json();
-        console.log('Fetched orders:', data);
-
-        const sortedOrders = data.orders.sort(
-          (a, b) => new Date(a.date) - new Date(b.date)
-        );
-        setOrders(sortedOrders || []);
-        setTotalPages(Math.ceil(data.totalCount / limit));
-      } catch (error) {
-        console.error('Error:', error.message);
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/orders?userId=${user.id}&filter=${filter}&page=${page}&limit=${limit}`
+      );
+      if (!response.ok) {
+        throw new Error('Nie udało się pobrać zamówień');
       }
-    };
+      const data = await response.json();
+      console.log('Fetched orders:', data);
 
+      // Backend sortuje zamówienia odpowiednio na podstawie filtra
+      setOrders(data.orders || []);
+      setTotalPages(Math.ceil(data.totalCount / limit));
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
+
+  // useEffect do pobierania zamówień
+  useEffect(() => {
     fetchOrders();
-  }, [user, filter, page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, filter, page]); // fetchOrders jest zdefiniowana poza useEffect
 
+  // useEffect do pobierania salda
   useEffect(() => {
     fetchBalance();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  // Obsługa zmiany filtra
+  const handleFilterChange = (e) => {
+    setFilter(e.target.value);
+    setPage(1); // Resetuj stronę do 1 po zmianie filtra
+  };
+
+  // Obsługa anulowania zamówienia
   const handleCancelOrder = async (orderId) => {
     try {
       const response = await fetch(
@@ -68,16 +82,16 @@ function UserProfile() {
       if (!response.ok) {
         throw new Error('Błąd podczas anulowania zamówienia');
       }
-      setOrders(orders.filter(order => order.id !== orderId));
-
-      // Aktualizacja salda po anulowaniu zamówienia
+      // Po anulowaniu, ponownie pobierz zamówienia i saldo
+      fetchOrders();
       fetchBalance();
-
     } catch (error) {
       alert("Błąd podczas anulowania zamówienia: " + error.message);
+      console.error("Błąd podczas anulowania zamówienia:", error);
     }
   };
 
+  // Formatowanie daty
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('pl-PL', {
       weekday: 'long', 
@@ -87,6 +101,7 @@ function UserProfile() {
     });
   };
 
+  // Sprawdzanie, czy obiad jest już przeszły
   const isPast = (dateString) => {
     const now = new Date();
     const orderDate = new Date(dateString);
@@ -97,7 +112,7 @@ function UserProfile() {
   };
 
   if (!user) {
-    return <div>Nie zalogowano</div>;
+    return <Navigate to="/login" />;
   }
 
   return (
@@ -105,10 +120,11 @@ function UserProfile() {
       <br/>
       <h1>Mój Profil</h1>
       {balance !== null && <p>Saldo: {balance} zł</p>}
-      <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+      <select value={filter} onChange={handleFilterChange}>
         <option value="upcoming">Nadchodzące obiady</option>
         <option value="past">Minione obiady</option>
       </select>
+      
       {totalPages > 1 && (
         <div className="pagination-controls">
           <button
@@ -134,6 +150,7 @@ function UserProfile() {
           </button>
         </div>
       )}
+      
       {Array.isArray(orders) && orders.length > 0 ? (
         <table className="orders-table">
           <thead>
