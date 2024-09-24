@@ -1,1 +1,0 @@
-dodałem puste pliki Register css i js do folderu Home. Dodajmy rejestrację użytkownika do aplikacji. uzytkownik podaje login, 2 razy hasło, imie, nazwisko, wybiera klasę z listy które są w bazie
