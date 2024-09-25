@@ -235,8 +235,8 @@ function OrderForm() {
       </div>
 
       <div style={{ textAlign: 'center', marginTop: '15px', marginBottom: '20px' }}>
-        <a href="#" target="_blank" rel="noopener noreferrer">
-          <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu - zmienić link OrderForm.js</button>
+        <a href="https://drive.google.com/drive/folders/1R8WudsYKQGNi601iG7Ig_mNXDspAENQ_?usp=sharing" target="_blank" rel="noopener noreferrer">
+          <button style={{ padding: '10px 20px', fontSize: '18px', cursor: 'pointer' }}>Menu</button>
         </a>
       </div>
 
