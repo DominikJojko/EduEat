@@ -168,7 +168,6 @@ app.use((req, res, next) => {
 const authRoutes = require('./routes/authRoutes');
 app.use('/api', authRoutes);
 
-// AddUser.js
 app.post('/api/add-user', (req, res) => {
   console.log('Received add-user request:', req.body);
   const { login, password, imie, nazwisko, klasa, role_id } = req.body;
