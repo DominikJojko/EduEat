@@ -10,6 +10,7 @@
 
 .register-container h1 {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .register-form input, 
@@ -52,4 +53,3 @@
   margin-top: 30px; /* Możesz dostosować wielkość odstępu */
   margin-bottom: 10px;
 }
-
