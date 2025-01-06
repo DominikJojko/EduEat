@@ -9,7 +9,7 @@
 
 
 .register-container h1 {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -17,9 +17,16 @@
 .register-form select {
   width: 100%;
   padding: 10px;
-  margin-bottom: 10px;
-  border: 1px solid #464646;
-  border-radius: 4px;
+  margin-bottom: 5px;
+  border: 1px solid #464646; /* Szary kolor granicy */
+  border-radius: 1px;
+  background-color: #282828; /* Ciemne tło */
+  color: #ffffff; /* Biały tekst */
+  cursor: pointer;
+}
+
+.register-form select:hover {
+  background-color: #363636; /* Jaśniejszy odcień przy najechaniu */
 }
 
 .register-form button {
@@ -50,6 +57,6 @@
 }
 
 .spacer {
-  margin-top: 30px; /* Możesz dostosować wielkość odstępu */
+  margin-top: 30px;
   margin-bottom: 10px;
 }

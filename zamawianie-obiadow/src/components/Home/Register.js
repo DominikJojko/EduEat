@@ -161,9 +161,7 @@ function Register() {
           </select>
           {error.klasa && <p className="error">{error.klasa}</p>}
         </div>
-
-        <div className="spacer"></div>
-
+        
         <div>
           <input
             type="text"
