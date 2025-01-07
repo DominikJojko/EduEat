@@ -1,9 +1,12 @@
 .user-meals-management-container {
     padding: 20px;
+    text-align: center;
+    padding-top: 50px;
   }
   
   .search-section {
     margin-bottom: 20px;
+    text-align: center;
   }
   
   .search-section input {
@@ -31,6 +34,7 @@
   
   .user-orders {
     margin-top: 30px;
+    text-align: center;
   }
   
   .user-orders table {
@@ -41,10 +45,11 @@
   .user-orders th, .user-orders td {
     border: 1px solid #ccc;
     padding: 8px;
-    text-align: left;
+    text-align: center;
   }
   
   .user-orders th {
-    background-color: #f2f2f2;
+    background-color: #505050;
+    text-align: center;
   }
   
